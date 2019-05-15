@@ -14,9 +14,27 @@ const port = 3000;
 ///////////// select view engine /////////////////////////
 app.set('view engine', 'ejs');
 
+/////////////// tell express to use middlewares ///////////////
+app.use(bodyParser.urlencoded({extended: true}));
 
+/////////////////////////////////////////////////////////
+var login;
 
+function getLogin(req, res) {
+	res.render('login');
+}
+app.get('/Login', getLogin);
 
+function postLogin(req, res){
+  login = req.body.login;
+  res.redirect('/SMS');
+}
+app.post('/Login', postLogin);
+
+function getSMS(req, res){
+  res.render('sms');
+}
+app.get('/SMS', getSMS);
 
 
 ///////////// launch app //////////////////
