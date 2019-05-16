@@ -28,7 +28,7 @@ class Bot {
 		if(brain) {
 			this.cerveau.loadFile('./cerveaux/'+brain).then(loading_done.bind(this)).catch(loading_error);
 		} else {
-			this.cerveau.loadDirectory("/media/ubuntu/data/work/web/ChatBot/chatbots/cerveaux").then(loading_done.bind(this)).catch(loading_error);
+			this.cerveau.loadDirectory("./cerveaux").then(loading_done.bind(this)).catch(loading_error);
 		}
 
 		function loading_done() {
