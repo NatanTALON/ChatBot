@@ -1,0 +1,28 @@
+<html>
+	<head>
+		<title>Détail du bot</title>
+	</head>
+	<body>
+		<div>
+			<form action="/" method="get">
+				<input type="submit" value="menu">
+			</form>
+		</div>
+		<div>
+			<div>
+				Nom : <%= bot.name %>
+			</div>
+			<div>
+				Connexions : <%= bot.connections %>
+			</div>
+			<div>
+				Cerveau : <%= bot.brain %>
+			</div>
+		</div>
+		<div>
+			<form action="/modifieBot" method="get">
+				<input type="submit" value="modifier">
+			</form>
+		</div>
+	</body>
+</html>
