@@ -50,8 +50,6 @@ class Bot {
 				let newConv = {userName: req.body.userName, messageList: []};
 				this.conversations.push(newConv);
 				res.render('conversation', {conv: newConv});
-	console.log(newConv);
-	console.log(this.conversations);
 			}
 
 			app.post('/conv', postOnConv.bind(this));
@@ -60,16 +58,15 @@ class Bot {
 					return elt.userName == req.body.userName;
 				});
 
-	console.log(i);
-	console.log(this.conversations[i]);
-
 				if (i != -1) {
 					this.conversations[i].messageList.push({author: req.body.userName, message: req.body.message});
-					this.cerveau.reply(req.body.userName, req.body.message).then(botResponse.bind(this));
+					this.cerveau.reply(req.body.userName, req.body.message).then(botResponse.bind(this)).then(sendResponse.bind(this));
 					function botResponse(reply) {
 						this.conversations[i].messageList.push({author: "bot", message: reply});
 					}
-					res.render('conversation', {conv: this.conversations[i]});
+					function sendResponse() {
+						res.render('conversation', {conv: this.conversations[i]});
+					}
 				} else {
 					res.render('login');
 				}
