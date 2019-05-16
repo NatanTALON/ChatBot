@@ -65,10 +65,11 @@ class Bot {
 
 				if (i != -1) {
 					this.conversations[i].messageList.push({author: req.body.userName, message: req.body.message});
-					this.cerveau.reply(req.body.userName, req.body.message).then(function(reply) {
-						this.conversation[i].messageList.push({author: "bot", message: reply});
-						res.render('conversation', {conv: this.conversations[i]});
-					});
+					this.cerveau.reply(req.body.userName, req.body.message).then(botResponse.bind(this));
+					function botResponse(reply) {
+						this.conversations[i].messageList.push({author: "bot", message: reply});
+					}
+					res.render('conversation', {conv: this.conversations[i]});
 				} else {
 					res.render('login');
 				}

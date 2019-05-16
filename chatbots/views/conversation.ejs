@@ -13,7 +13,7 @@
     		</div>
     		<% }) %>
     		<form action="/conv" method="post">
-    			<input type="hidden" name="userName">
+    			<input type="hidden" name="userName" value="<%= conv.userName %>">
 				<div>
 					<input type="text" name="message" class="form-control mt-3">
 				</div>
