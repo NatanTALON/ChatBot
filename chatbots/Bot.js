@@ -11,8 +11,9 @@ class Bot {
 	cerveau;
 	conversations;
 */
-	constructor(url, port, brain) {
-		this.connectionUrl = url;
+	constructor(botName, connection, port, brain) {
+		this.name = botName;
+		this.connection = connection;
 		this.listeningPort = port;
 		this.cerveau = new RiveScript();
 		this.conversations = [];
@@ -84,7 +85,5 @@ class Bot {
 }
 
 
-/* test */
-var bot = new Bot("", 3000, undefined);
 
 module.exports = Bot;
