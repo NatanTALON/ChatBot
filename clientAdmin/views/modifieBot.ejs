@@ -1,0 +1,30 @@
+<html>
+<head>
+	<title>Modification du bot</title>
+</head>
+<body>
+	<div>
+		<form action="/" method="get">
+			<input type="submit" value="menu">
+		</form>
+	</div>
+	<div>
+		<form action="/modifieBot" method="post">
+			<input type="hidden" name="id" value="<%= bot.name %>">
+			<div>
+				Nom : 
+				<input type="text" name="name" value="<%= bot.name %>">
+			</div>
+			<div>
+				Connexions : 
+				<input type="text" name="connections" value="<%= bot.connections %>">
+			</div>
+			<div>
+				Cerveau : 
+				<input type="text" name="brain" value="<%= bot.brain %>">
+			</div>
+			<input type="submit" value="Enregistrer">
+		</form>
+	</div>
+</body>
+</html>
