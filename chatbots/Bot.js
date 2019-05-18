@@ -1,8 +1,12 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const RiveScript = require('rivescript');
+const Discord = require('discord.js');
 
-
+const services = {
+	SMS: 0,
+	DISCORD: 1
+}
 
 class Bot {
 /*
@@ -11,9 +15,9 @@ class Bot {
 	cerveau;
 	conversations;
 */
-	constructor(url, port, brain) {
-		this.connectionUrl = url;
-		this.listeningPort = port;
+	constructor(service, token, brain) {
+		this.service = service;
+		this.token = token;
 		this.cerveau = new RiveScript();
 		this.conversations = [];
 		/*
@@ -35,6 +39,20 @@ class Bot {
 			console.log("Bot has finished loading!");
 			this.cerveau.sortReplies();
 
+			switch(this.service) {
+				case services.SMS:
+					connect_SMS.bind(this)();
+					break;
+				case services.DISCORD:
+					connect_DISCORD.bind(this)();
+					break;
+				default:
+					console.log("Error: Unkown service");
+			}
+		}
+
+
+		function connect_SMS() {
 			const app = express();
 			app.set('view engine', 'ejs');
 
@@ -73,7 +91,31 @@ class Bot {
 
 			}
 
-			app.listen(port, () => console.log(`bot listening on ${port}`));
+			app.listen(this.token, () => console.log(`bot listening on ${this.token}`));
+		}
+
+
+
+		function connect_DISCORD() {
+			const client = new Discord.Client();
+
+			client.on('ready', () => {
+				console.log(`Logged in as ${client.user.tag}!`);
+			});
+
+			client.on('message', botResponse.bind(this));
+
+			function botResponse(msg) {
+				if(msg.author.discriminator != 3118 && msg.content.split(' ')[0] == '<@579288474964852737>') {
+					this.cerveau.reply(msg.author.discriminator, msg.content).then(sendResponse.bind(this));
+					function sendResponse(botMsg) {
+						msg.reply(botMsg);
+					}	
+				}
+			}
+
+
+			client.login(this.token);
 		}
 
 
@@ -85,6 +127,6 @@ class Bot {
 
 
 /* test */
-var bot = new Bot("", 3000, undefined);
+var bot = new Bot(1, 'NTc5Mjg4NDc0OTY0ODUyNzM3.XN__wg.5dkZA5O3uMyDbBySY0co-KljaIg', undefined);
 
 module.exports = Bot;
