@@ -23,6 +23,7 @@
 ! sub /         = divise
 ! sub *         = fois
 ! sub ça 		= ca
+! sub m'appelle = m appelle
 
 
 + [*] (salut|bonjour|coucou)
@@ -39,8 +40,13 @@
 - pas trop, j'ai un boulon qui rouille :'(
 
 
-+ 
++ [*] natan [*]
+- J'adore Natan ! C'est mon idole, un homme parfait !
 
+
++ [*] je m appelle _ [*]
+- Je m'en tampone l'oreille avec une babouche !
+- <set name=<formal>>D'acc <get name> !
 
 
 // match all
