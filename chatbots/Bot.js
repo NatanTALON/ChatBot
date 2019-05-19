@@ -18,7 +18,7 @@ class Bot {
 	constructor(service, token, brain) {
 		this.service = service;
 		this.token = token;
-		this.cerveau = new RiveScript();
+		this.brain = new RiveScript();
 		this.conversations = [];
 		/*
 		[
@@ -29,22 +29,16 @@ class Bot {
 		]
 		*/
 
-		if(brain) {
-			this.cerveau.loadFile('./cerveaux/'+brain).then(loading_done.bind(this)).catch(loading_error);
-		} else {
-			this.cerveau.loadDirectory("./cerveaux").then(loading_done.bind(this)).catch(loading_error);
-		}
-
-		function loading_done() {
+		this.loading_done = function () {
 			console.log("Bot has finished loading!");
-			this.cerveau.sortReplies();
+			this.brain.sortReplies();
 
 			switch(this.service) {
 				case services.SMS:
-					connect_SMS.bind(this)();
+					this.connect_SMS.bind(this)();
 					break;
 				case services.DISCORD:
-					connect_DISCORD.bind(this)();
+					this.connect_DISCORD.bind(this)();
 					break;
 				default:
 					console.log("Error: Unkown service");
@@ -52,7 +46,7 @@ class Bot {
 		}
 
 
-		function connect_SMS() {
+		this.connect_SMS = function () {
 			const app = express();
 			app.set('view engine', 'ejs');
 
@@ -78,7 +72,7 @@ class Bot {
 
 				if (i != -1) {
 					this.conversations[i].messageList.push({author: req.body.userName, message: req.body.message});
-					this.cerveau.reply(req.body.userName, req.body.message).then(botResponse.bind(this)).then(sendResponse.bind(this));
+					this.brain.reply(req.body.userName, req.body.message).then(botResponse.bind(this)).then(sendResponse.bind(this));
 					function botResponse(reply) {
 						this.conversations[i].messageList.push({author: "bot", message: reply});
 					}
@@ -96,7 +90,7 @@ class Bot {
 
 
 
-		function connect_DISCORD() {
+		this.connect_DISCORD = function () {
 			const client = new Discord.Client();
 
 			client.on('ready', () => {
@@ -107,7 +101,7 @@ class Bot {
 
 			function botResponse(msg) {
 				if(msg.author.discriminator != 3118 && msg.content.split(' ')[0] == '<@579288474964852737>') {
-					this.cerveau.reply(msg.author.discriminator, msg.content).then(sendResponse.bind(this));
+					this.brain.reply(msg.author.discriminator, msg.content).then(sendResponse.bind(this));
 					function sendResponse(botMsg) {
 						msg.reply(botMsg);
 					}	
@@ -119,14 +113,22 @@ class Bot {
 		}
 
 
-		function loading_error(error, filename, lineno) {
+		this.loading_error = function (error, filename, lineno) {
 			console.log("Error when loading files: " + error);
+		}
+
+
+		if(brain) {
+			this.brain.loadFile('./cerveaux/'+brain).then(this.loading_done.bind(this)).catch(this.loading_error);
+		} else {
+			this.brain.loadDirectory("./cerveaux").then(this.loading_done.bind(this)).catch(this.loading_error);
 		}
 	}
 }
 
 
 /* test */
-var bot = new Bot(1, 'NTc5Mjg4NDc0OTY0ODUyNzM3.XN__wg.5dkZA5O3uMyDbBySY0co-KljaIg', undefined);
+var bot = new Bot(0, 3000, undefined);
+//var bot = new Bot(1, 'NTc5Mjg4NDc0OTY0ODUyNzM3.XN__wg.5dkZA5O3uMyDbBySY0co-KljaIg', undefined);
 
 module.exports = Bot;
