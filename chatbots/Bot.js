@@ -5,7 +5,7 @@ const Discord = require('discord.js');
 
 const services = {
 	SMS: 0,
-	DISCORD: 1
+	DISCORD: 1		// https://discordapp.com/oauth2/authorize?client_id=Bot_Client_ID&scope=bot&permissions=2048	clientId for botounet = 579288474964852737
 }
 
 class Bot {
@@ -145,7 +145,7 @@ class Bot {
 
 
 /* test */
-var bot = new Bot(0, 3000, undefined);
-//var bot = new Bot(1, 'NTc5Mjg4NDc0OTY0ODUyNzM3.XN__wg.5dkZA5O3uMyDbBySY0co-KljaIg', undefined);
+//var bot = new Bot(0, 3000, undefined);
+var bot = new Bot(1, 'NTc5Mjg4NDc0OTY0ODUyNzM3.XN__wg.5dkZA5O3uMyDbBySY0co-KljaIg', 'Botounet.rive');
 
 module.exports = Bot;

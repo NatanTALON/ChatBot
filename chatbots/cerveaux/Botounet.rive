@@ -1,0 +1,52 @@
+! version = 2.0
+
+> begin
+	+ request // This trigger is tested first.
+	- {ok}    // An {ok} in the response means it's okay to get a real reply
+< begin
+
+
+// The Botmaster's Name
+! var master = Natan
+
+// Bot Variables
+! var name = Botounet
+
+// Substitutions
+! sub &quot;    = "
+! sub &apos;    = '
+! sub &amp;     = &
+! sub &lt;      = <
+! sub &gt;      = >
+! sub +         = plus
+! sub -         = moins
+! sub /         = divise
+! sub *         = fois
+! sub ça 		= ca
+
+
++ [*] (salut|bonjour|coucou)
+- Salut !
+- Yo !
+- Quoi de neuf ?
+- ça va ?
+
+
++ [*] et toi
+% ca va
+- bien
+- tranquille
+- pas trop, j'ai un boulon qui rouille :'(
+
+
++ 
+
+
+
+// match all
++ *
+- Mbah !
+- Je ne suis pas sûr de comprendre.
+- Désolé je t'écoutais pas, tu disais ?
+- Kebab vendredi ?
+- C'est pas que ce que tu dis es inintéressant, c'est juste que là, comme ça, j'en ai rien à foutre !
