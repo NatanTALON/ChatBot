@@ -9,12 +9,7 @@ const services = {
 }
 
 class Bot {
-/*
-	connectionUrl;
-	listeningPort;
-	cerveau;
-	conversations;
-*/
+
 	constructor(service, token, brain) {
 		this.service = service;
 		this.token = token;
@@ -32,13 +27,17 @@ class Bot {
 		this.loading_done = function () {
 			console.log("Bot has finished loading!");
 			this.brain.sortReplies();
+			this.connectToService();			
+		}
 
+
+		this.connectToService = function () {
 			switch(this.service) {
 				case services.SMS:
-					this.connect_SMS.bind(this)();
+					this.connect_SMS();
 					break;
 				case services.DISCORD:
-					this.connect_DISCORD.bind(this)();
+					this.connect_DISCORD();
 					break;
 				default:
 					console.log("Error: Unkown service");
@@ -115,6 +114,24 @@ class Bot {
 
 		this.loading_error = function (error, filename, lineno) {
 			console.log("Error when loading files: " + error);
+		}
+
+
+		this.changeBrain = function (brain) {
+			this.brain = new RiveScript();
+			this.brain.loadFile('./cerveaux/'+brain).then(this.loading_done).catch(this.loading_error);
+		}
+
+
+		this.addBrain = function (brain) {
+			this.brain.loadFile('./cerveaux/'+brain).then(this.loading_done).catch(this.loading_error);
+		}
+
+
+		this.changeService = function (service,token) {
+			this.service = service;
+			this.token = token;
+			this.connectToService();
 		}
 
 
