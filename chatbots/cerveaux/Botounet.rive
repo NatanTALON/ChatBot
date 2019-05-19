@@ -45,8 +45,10 @@
 
 
 + [*] je m appelle _ [*]
+- <get name> == undefined => <set name=<formal>>D'acc <get name> !
+- <get name> == <formal> => Oui je sais tu me l'as déjà dit. Tu serais pas un peu mégalo sur les bords ?
 - Je m'en tampone l'oreille avec une babouche !
-- <set name=<formal>>D'acc <get name> !
+- Je préfère <get name>. Donc je vais continuer de t'appeler comme ça.
 
 
 // match all
