@@ -16,8 +16,15 @@
 				<input type="text" name="name" value="<%= bot.name %>">
 			</div>
 			<div>
-				Connexions : 
-				<input type="text" name="connections" value="<%= bot.connections %>">
+				Service :
+				<select name="service">
+					<option value=0>SMS</option>
+					<option value=1>Discord</option>
+				</select>
+			</div>
+			<div>
+				Token :
+				<input type="text" name="token" value="<%= bot.token %>">
 			</div>
 			<div>
 				Cerveau : 

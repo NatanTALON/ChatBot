@@ -34,7 +34,7 @@ app.post('/bot', cors(corsOptions), function(req, res) {
 	botPort ++;
 	var bot = new Bot(req.body.name, req.body.token, req.body.brain);
 	chatbots.push(bot);
-	chatbotsDescriptor.push({"name" : req.body.name, "token" : req.body.token, "port" : botPort, "brain" : req.body.brain });
+	chatbotsDescriptor.push({"name" : req.body.name, "token" : req.body.token, "brain" : req.body.brain });
 	console.log(chatbotsDescriptor);
 	res.json(chatbotsDescriptor);
 });

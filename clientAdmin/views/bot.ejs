@@ -13,7 +13,10 @@
 				Nom : <%= bot.name %>
 			</div>
 			<div>
-				Connexions : <%= bot.connections %>
+				Service : <% (bot.service == 0) ? SMS : Discord %>
+			</div>
+			<div>
+				Token : <%= bot.token %>
 			</div>
 			<div>
 				Cerveau : <%= bot.brain %>
