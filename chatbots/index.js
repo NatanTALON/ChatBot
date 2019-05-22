@@ -27,9 +27,9 @@ app.get('/allBots', cors(), function(req, res){
 app.post('/bot', function(req, res) {
 	//incrémentation du numéro de port
 	botPort ++;
-	var bot = new Bot(req.body.name, req.body.connection, botPort, req.body.brain);
+	var bot = new Bot(req.body.name, req.body.token, req.body.brain);
 	chatbots.push(bot);
-	chatbotsDescriptor.push({"name" : req.body.name, "connection" : req.body.connection, "port" : botPort, "brain" : req.body.brain });
+	chatbotsDescriptor.push({"name" : req.body.name, "token" : req.body.token, "port" : botPort, "brain" : req.body.brain });
 	console.log(chatbotsDescriptor);
 	res.json(chatbotsDescriptor);
 });
@@ -53,7 +53,7 @@ app.put('/bot/:nomBot', cors(), function(req, res){
 		if(chatbots[i].name == req.params.nomBot){
 			//TODO : detruire l'autre bot ou faire sorte qu'il arrête de listen(express doc)
 			chatbots.splice(i, 1, bot);
-			chatbotsDescriptor.splice(i,1,{"name" : req.body.nom, "url" : req.body.url, "brain" : req.body.brain});
+			chatbotsDescriptor.splice(i,1,{"name" : req.body.nom, "token" : req.body.token, "brain" : req.body.brain});
 		}
 	}
 	res.json(chatbotsDescriptor);
