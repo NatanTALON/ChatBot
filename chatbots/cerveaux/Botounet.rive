@@ -24,6 +24,10 @@
 ! sub *         = fois
 ! sub ça 		= ca
 ! sub m'appelle = m appelle
+! sub c'est 	= c est
+! sub Rémy		= remy
+! sub t'es 		= tu es
+
 
 
 + [*] (salut|bonjour|coucou)
@@ -49,6 +53,49 @@
 - <get name> == <formal> => Oui je sais tu me l'as déjà dit. Tu serais pas un peu mégalo sur les bords ?
 - Je m'en tampone l'oreille avec une babouche !
 - Je préfère <get name>. Donc je vais continuer de t'appeler comme ça.
+
+
++ [*] bug [*]
+- Encore de la faute de Cyril ça !
+- C'est de la faute de Cyril !
+
+
++ [*] kebab [*]
+- grave chaud !
+- ozgur ?
+- yep quelle heure ?
+
+
++ [*] _h[*]
+% yep quelle heure
+- Aller !
+- jpeux pas j'ai aqua poney !
+
+
++ [*] jager [*]
+- j'aime pas les boissons de pd !
+
+
++ [*] pd [*]
+- c'est pas au programme dans les universités
+- tu serais pas homophobe ?
+- sale engeance !
+
+
++ [*] tu es pd [*]
+- quelle répartie !
+- je suis un robot ducon ! J'ai pas de sexe
+
++ [*] pd toi [*]
+@ [*] pd [*]
+
+
++ [*] remy [*]
+- si tu veux qu'on parle d'Ida d'accord, par contre l'autre je l'aime pas
+- entre nous l'Italie ça pue du cul !
+- CoreDump ?
+- je dirais pas qui l'a dit, mais j'ai entendu c'est un pd
+
 
 
 // match all

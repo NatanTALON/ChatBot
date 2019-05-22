@@ -13,7 +13,7 @@ class Bot {
 	constructor(service, token, brain) {
 		this.service = service;
 		this.token = token;
-		this.brain = new RiveScript();
+		this.brain = new RiveScript({utf8: true});
 		this.conversations = [];
 		/*
 		[
@@ -99,14 +99,13 @@ class Bot {
 			client.on('message', botResponse.bind(this));
 
 			function botResponse(msg) {
-				if(msg.author.discriminator != 3118 && msg.content.split(' ')[0] == '<@579288474964852737>') {
+				if(!msg.author.bot && msg.isMemberMentioned(client.user)) {
 					this.brain.reply(msg.author.discriminator, msg.content).then(sendResponse.bind(this));
 					function sendResponse(botMsg) {
 						msg.reply(botMsg);
 					}	
 				}
 			}
-
 
 			client.login(this.token);
 		}
