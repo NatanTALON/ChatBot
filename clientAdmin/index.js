@@ -21,12 +21,9 @@ app.use(bodyParser.json());
 var response;
 const httpRequest = new XMLHttpRequest();
 httpRequest.onreadystatechange = function() {
-	if (httpRequest.readyState === 4) {
-		if (httpRequest.status == 200) {
-			response = JSON.parse(httpRequest.responseText);
-		} else {
-			console.log("Erreur " + httpRequest.status);
-		}
+	if (httpRequest.readyState === 4 && httpRequest.status == 200) {
+		response = JSON.parse(httpRequest.responseText);
+		console.log("Erreur " + httpRequest.status);
 	}
 };
 
@@ -58,7 +55,7 @@ app.post('/bot', function(req,res) {
 });
 
 app.post('/newBot', function(req,res) {
-	let bot = {name: req.body.name, connections: req.body.connections, brain: req.body.brain};
+	let bot = {name: req.body.name, service: parseInt(req.body.service, 10), token: req.body.token, brain: req.body.brain};
 	httpRequest.open('POST', 'http://localhost:3000/bot', true);
 	httpRequest.setRequestHeader('Content-Type', 'application/json');
 	httpRequest.send(JSON.stringify(bot));
@@ -66,7 +63,7 @@ app.post('/newBot', function(req,res) {
 });
 
 app.post('/modifieBot', function(req,res) {
-	let bot = {name: req.body.name, connections: req.body.connections, brain: req.body.brain};
+	let bot = {name: req.body.name, service: parseInt(req.body.service, 10), token: req.body.token, brain: req.body.brain};
 	httpRequest.open('PUT', `http://localhost:3000/bot/${req.body.id}`, true);
 	httpRequest.setRequestHeader('Content-Type', 'application/json');
 	httpRequest.send(JSON.stringify(bot));

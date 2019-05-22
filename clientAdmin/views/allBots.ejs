@@ -13,14 +13,14 @@
 			<thead>
 				<tr>
 					<th>Nom</th>
-					<th>Connexions</th>
+					<th>Service</th>
 					<th>Cerveau</th>
 				</tr>
 			</thead>
 			<tbody>
 				<% botList.forEach( function(item, index, array) { %>
 				<tr>
-					<td><%= item.name %></td><td><%= item.connections %></td><td><%= item.brain %></td>
+					<td><%= item.name %></td><td><% (item.service == 0) ? SMS : Discord %></td><td><%= item.brain %></td>
 					<td>
 						<form action="/bot" method="post">
 							<input type="hidden" name="name" value="<%= item.name %>">

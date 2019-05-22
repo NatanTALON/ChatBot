@@ -10,7 +10,8 @@ const services = {
 
 class Bot {
 
-	constructor(service, token, brain) {
+	constructor(name, service, token, brain) {
+		this.name = name;
 		this.service = service;
 		this.token = token;
 		this.brain = new RiveScript({utf8: true});
@@ -24,6 +25,11 @@ class Bot {
 			}
 		]
 		*/
+
+		this.getName = function () {
+			return this.name;
+		}
+
 
 		this.loading_done = function () {
 			console.log("Bot has finished loading!");
@@ -85,7 +91,7 @@ class Bot {
 
 			}
 
-			this.app.listen(this.token, () => console.log(`bot listening on ${this.token}`));
+			this.app.listen(parseInt(this.token,10), () => console.log(`bot listening on ${this.token}`));
 		}
 		
 
