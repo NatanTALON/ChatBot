@@ -13,7 +13,7 @@
 				Nom : <%= bot.name %>
 			</div>
 			<div>
-				Service : <% (bot.service == 0) ? SMS : Discord %>
+				Service : <% switch(bot.service) {case 0:%> SMS <% break; case 1:%> Discord <% defaut: break; } %>
 			</div>
 			<div>
 				Token : <%= bot.token %>
