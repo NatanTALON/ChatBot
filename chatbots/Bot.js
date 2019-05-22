@@ -5,7 +5,7 @@ const Discord = require('discord.js');
 
 const services = {
 	SMS: 0,
-	DISCORD: 1
+	DISCORD: 1		// https://discordapp.com/oauth2/authorize?client_id=Bot_Client_ID&scope=bot&permissions=2048	clientId for botounet = 579288474964852737
 }
 
 class Bot {
@@ -13,7 +13,7 @@ class Bot {
 	constructor(service, token, brain) {
 		this.service = service;
 		this.token = token;
-		this.brain = new RiveScript();
+		this.brain = new RiveScript({utf8: true});
 		this.conversations = [];
 		/*
 		[
@@ -99,14 +99,13 @@ class Bot {
 			client.on('message', botResponse.bind(this));
 
 			function botResponse(msg) {
-				if(msg.author.discriminator != 3118 && msg.content.split(' ')[0] == '<@579288474964852737>') {
+				if(!msg.author.bot && msg.isMemberMentioned(client.user)) {
 					this.brain.reply(msg.author.discriminator, msg.content).then(sendResponse.bind(this));
 					function sendResponse(botMsg) {
 						msg.reply(botMsg);
 					}	
 				}
 			}
-
 
 			client.login(this.token);
 		}
@@ -143,6 +142,10 @@ class Bot {
 	}
 }
 
+
+/* test */
+//var bot = new Bot(0, 3000, undefined);
+//var bot = new Bot(1, 'NTc5Mjg4NDc0OTY0ODUyNzM3.XN__wg.5dkZA5O3uMyDbBySY0co-KljaIg', 'Botounet.rive');
 
 
 module.exports = Bot;
