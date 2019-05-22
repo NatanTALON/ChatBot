@@ -92,6 +92,7 @@ class Bot {
 
 			app.listen(this.token, () => console.log(`bot listening on ${this.token}`));
 		}
+		
 
 
 
