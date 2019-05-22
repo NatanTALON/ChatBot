@@ -24,12 +24,12 @@ var chatbots = [];
 var chatbotsDescriptor = [];
 
 
-app.get('/allBots', cors(), function(req, res){
+app.get('/allBots', cors(corsOptions), function(req, res){
 	console.log(chatbotsDescriptor);
 	res.json(chatbotsDescriptor);
 });
 
-app.post('/bot', function(req, res) {
+app.post('/bot', cors(corsOptions), function(req, res) {
 	//incrémentation du numéro de port
 	botPort ++;
 	var bot = new Bot(req.body.name, req.body.connection, botPort, req.body.brain);
@@ -40,7 +40,7 @@ app.post('/bot', function(req, res) {
 });
 
 
-app.delete('/bot/:nomBot', cors(), function(req,res){
+app.delete('/bot/:nomBot', cors(corsOptions), function(req,res){
 	for(i = 0; i < chatbots.length; i++){
 		test = chatbots[i].name == req.params.nomBot;
 		if(chatbots[i].name == req.params.nomBot){
@@ -52,7 +52,7 @@ app.delete('/bot/:nomBot', cors(), function(req,res){
 	res.json(chatbotsDescriptor);
 });
 
-app.put('/bot/:nomBot', cors(), function(req, res){
+app.put('/bot/:nomBot', cors(corsOptions), function(req, res){
 	var bot = new Bot(req.body.nom, req.body.url, botPort, req.body.brain);
 	for(i = 0; i < chatbots.length; i++){
 		if(chatbots[i].name == req.params.nomBot){
