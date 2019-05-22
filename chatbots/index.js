@@ -48,7 +48,7 @@ app.put('/bot/:nomBot', cors(), function(req, res){
 	var bot = new Bot(req.body.nom, req.body.url, botPort, req.body.brain);
 	for(i = 0; i < chatbots.length; i++){
 		if(chatbots[i].name == req.params.nomBot){
-			//TODO : detruire l'autre bot ou faire sorte qu'il arrête de listen(express doc)
+			chatbots[i].stopListen();
 			chatbots.splice(i, 1, bot);
 			chatbotsDescriptor.splice(i,1,{"name" : req.body.nom, "service" : req.body.service, "token" : req.body.token, "brain" : req.body.brain});
 		}
