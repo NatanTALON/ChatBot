@@ -21,12 +21,9 @@ app.use(bodyParser.json());
 var response;
 const httpRequest = new XMLHttpRequest();
 httpRequest.onreadystatechange = function() {
-	if (httpRequest.readyState === 4) {
-		if (httpRequest.status == 200) {
-			response = JSON.parse(httpRequest.responseText);
-		} else {
-			console.log("Erreur " + httpRequest.status);
-		}
+	if (httpRequest.readyState === 4 && httpRequest.status == 200) {
+		response = JSON.parse(httpRequest.responseText);
+		console.log("Erreur " + httpRequest.status);
 	}
 };
 

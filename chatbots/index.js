@@ -11,6 +11,11 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json());
 app.use(cors());
+const corsOptions = {
+	origin: 'http://localhost:8081',
+	methods: 'GET,POST,PUT,DELETE',
+  	optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+};
 
 // le port des bots créés incrémente à chaque bot créé de sorte que chaque bot ait son propre port
 var botPort = 3001;
