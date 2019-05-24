@@ -16,6 +16,7 @@ class Bot {
 		this.token = token;
 		this.brain = new RiveScript({utf8: true});
 		this.conversations = [];
+		this.app;
 		/*
 		[
 			{
@@ -52,24 +53,24 @@ class Bot {
 
 
 		this.connect_SMS = function () {
-			const app = express();
-			app.set('view engine', 'ejs');
+			this.app = express();
+			this.app.set('view engine', 'ejs');
 
-			app.use(bodyParser.urlencoded({ extended: false }))
-			app.use(bodyParser.json());
+			this.app.use(bodyParser.urlencoded({ extended: false }))
+			this.app.use(bodyParser.json());
 
-			app.get('/', function(req, res) {
+			this.app.get('/', function(req, res) {
 				res.render('login');
 			});
 
-			app.post('/', postOnHome.bind(this));
+			this.app.post('/', postOnHome.bind(this));
 			function postOnHome(req,res) {
 				let newConv = {userName: req.body.userName, messageList: []};
 				this.conversations.push(newConv);
 				res.render('conversation', {conv: newConv});
 			}
 
-			app.post('/conv', postOnConv.bind(this));
+			this.app.post('/conv', postOnConv.bind(this));
 			function postOnConv(req,res) {
 				let i = this.conversations.findIndex(function(elt) {
 					return elt.userName == req.body.userName;
@@ -90,23 +91,31 @@ class Bot {
 
 			}
 
-			app.listen(parseInt(this.token,10), () => console.log(`bot listening on ${this.token}`));
+			this.app.listen(parseInt(this.token,10), () => console.log(`bot listening on ${this.token}`));
 		}
 		
 
 
+		this.stopListen = function(){
+			if( this.service == 0){
+				this.app.close();
+			}
+			else if(this.service == 1){
+				this.app.destroy();
+			}
+		}
 
 		this.connect_DISCORD = function () {
-			const client = new Discord.Client();
+			this.app = new Discord.Client();
 
-			client.on('ready', () => {
+			this.app.on('ready', () => {
 				console.log(`Logged in as ${client.user.tag}!`);
 			});
 
-			client.on('message', botResponse.bind(this));
+			this.app.on('message', botResponse.bind(this));
 
 			function botResponse(msg) {
-				if(!msg.author.bot && msg.isMemberMentioned(client.user)) {
+				if(!msg.author.bot && msg.isMemberMentioned(this.app.user)) {
 					this.brain.reply(msg.author.discriminator, msg.content).then(sendResponse.bind(this));
 					function sendResponse(botMsg) {
 						msg.reply(botMsg);
@@ -114,7 +123,7 @@ class Bot {
 				}
 			}
 
-			client.login(this.token);
+			this.app.login(this.token);
 		}
 
 
@@ -151,7 +160,7 @@ class Bot {
 
 
 /* test */
-//var bot = new Bot(0, 3000, undefined);
+var bot = new Bot(0, 3001, undefined);
 //var bot = new Bot(1, 'NTc5Mjg4NDc0OTY0ODUyNzM3.XN__wg.5dkZA5O3uMyDbBySY0co-KljaIg', 'Botounet.rive');
 
 
