@@ -37,6 +37,14 @@ app.post('/bot', cors(corsOptions),function(req, res) {
 	res.json(chatbotsDescriptor);
 });
 
+app.get('/bot/:nomBot', cors(corsOptions), function(req,res){
+	for(i =0; i< chatbots.length; i++){
+		if(chatbot[i].name == req.params.nomBot){
+			concernedChatBotDescriptor = chatbotsDescriptor[i];
+		}
+	}
+	res.json(concernedChatBotDescriptor);
+});
 
 app.delete('/bot/:nomBot', cors(corsOptions), function(req,res){
 	for(i = 0; i < chatbots.length; i++){
