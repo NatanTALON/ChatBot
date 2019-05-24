@@ -29,7 +29,7 @@ app.get('/allBots', cors(corsOptions), function(req, res){
 });
 
 
-app.post('/bot', function(req, res) {
+app.post('/bot', cors(corsOptions),function(req, res) {
 	var bot = new Bot(req.body.name, req.body.service, req.body.token, req.body.brain);
 	chatbots.push(bot);
 	chatbotsDescriptor.push({"name" : req.body.name, "service" : req.body.service, "token" : req.body.token, "brain" : req.body.brain });
