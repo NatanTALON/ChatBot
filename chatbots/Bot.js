@@ -144,6 +144,7 @@ class Bot {
 
 
 		this.changeService = function (service,token) {
+			this.stopListen();
 			this.service = service;
 			this.token = token;
 			this.connectToService();

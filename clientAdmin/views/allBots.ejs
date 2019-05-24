@@ -20,7 +20,9 @@
 			<tbody>
 				<% botList.forEach( function(item, index, array) { %>
 				<tr>
-					<td><%= item.name %></td><td><% switch(item.services) {case 0:%> SMS <% break; case 1:%> Discord <% break; default: break; }%></td><td><%= item.brain %></td>
+					<td><%= item.name %></td>
+					<td><% switch(item.service) {case 0:%> SMS <% break; case 1:%> Discord <% break; default: break; }%></td>
+					<td><%= item.brain %></td>
 					<td>
 						<form action="/bot" method="post">
 							<input type="hidden" name="name" value="<%= item.name %>">
