@@ -17,6 +17,7 @@ class Bot {
 		this.brain = new RiveScript({utf8: true});
 		this.conversations = [];
 		this.app;
+		this.server;
 		/*
 		[
 			{
@@ -91,14 +92,14 @@ class Bot {
 
 			}
 
-			this.app.listen(parseInt(this.token,10), () => console.log(`bot listening on ${this.token}`));
+			this.server = this.app.listen(parseInt(this.token,10), () => console.log(`bot listening on ${this.token}`));
 		}
 		
 
 
 		this.stopListen = function(){
 			if( this.service == 0){
-				this.app.close();
+				this.server.close();
 			}
 			else if(this.service == 1){
 				this.app.destroy();
