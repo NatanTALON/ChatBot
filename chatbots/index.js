@@ -39,7 +39,7 @@ app.post('/bot', cors(corsOptions),function(req, res) {
 
 app.get('/bot/:nomBot', cors(corsOptions), function(req,res){
 	for(i =0; i< chatbots.length; i++){
-		if(chatbot[i].name == req.params.nomBot){
+		if(chatbots[i].name == req.params.nomBot){
 			concernedChatBotDescriptor = chatbotsDescriptor[i];
 		}
 	}

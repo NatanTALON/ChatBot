@@ -144,6 +144,7 @@ class Bot {
 
 
 		this.changeService = function (service,token) {
+			this.stopListen();
 			this.service = service;
 			this.token = token;
 			this.connectToService();
@@ -160,7 +161,7 @@ class Bot {
 
 
 /* test */
-var bot = new Bot(0, 3001, undefined);
+//var bot = new Bot(0, 3001, undefined);
 //var bot = new Bot(1, 'NTc5Mjg4NDc0OTY0ODUyNzM3.XN__wg.5dkZA5O3uMyDbBySY0co-KljaIg', 'Botounet.rive');
 
 
