@@ -19,13 +19,26 @@ app.use(bodyParser.json());
 /////////////////////////////////////////////////////////
 
 var response;
-const httpRequest = new XMLHttpRequest();
-httpRequest.onreadystatechange = function() {
-	if (httpRequest.readyState === 4 && httpRequest.status == 200) {
-		response = JSON.parse(httpRequest.responseText);
-		console.log("Erreur " + httpRequest.status);
-	}
-};
+var httpRequest;
+
+function handleResponse(evtXHR){
+  if (httpRequest.readyState == 4){
+    if (httpRequest.status == 200){
+		try{
+      		response = JSON.parse(httpRequest.responseText);
+		console.log(response);
+		}catch(err){
+			console.log("invocation.responseText "+httpRequest.responseText);	
+		}
+    } else {
+     	console.error("Invocation Errors Occured " + httpRequest.readyState + " and the status is " + httpRequest.status);
+    }
+  } else {
+    console.log("currently the application is at" + httpRequest.readyState);
+  }
+}
+
+
 
 /////////////////////////////////////////////////////////
 
@@ -42,19 +55,27 @@ app.get('/modifieBot', function(req,res) {
 });
 
 app.get('/allBots', function(req,res) {
+	httpRequest = new XMLHttpRequest();
+	httpRequest.onreadystatechange = handleResponse;
 	httpRequest.open('GET', 'http://localhost:3000/allBots', false);
+console.log("request opened "+httpRequest.status);
 	httpRequest.send();
+console.log("request sent "+httpRequest.status);
 	res.render('allBots', {botList: response});
 });
 
 
 app.post('/bot', function(req,res) {
+	httpRequest = new XMLHttpRequest();
+	httpRequest.onreadystatechange = handleResponse;
 	httpRequest.open('GET', `http://localhost:3000/bot/${req.body.name}`, false);
 	httpRequest.send();
 	res.render('bot', {bot: response});
 });
 
 app.post('/newBot', function(req,res) {
+	httpRequest = new XMLHttpRequest();
+	httpRequest.onreadystatechange = handleResponse;
 	let bot = {name: req.body.name, service: parseInt(req.body.service, 10), token: req.body.token, brain: req.body.brain};
 	httpRequest.open('POST', 'http://localhost:3000/bot', true);
 	httpRequest.setRequestHeader('Content-Type', 'application/json');
@@ -63,6 +84,8 @@ app.post('/newBot', function(req,res) {
 });
 
 app.post('/modifieBot', function(req,res) {
+	httpRequest = new XMLHttpRequest();
+	httpRequest.onreadystatechange = handleResponse;
 	let bot = {name: req.body.name, service: parseInt(req.body.service, 10), token: req.body.token, brain: req.body.brain};
 	httpRequest.open('PUT', `http://localhost:3000/bot/${req.body.id}`, true);
 	httpRequest.setRequestHeader('Content-Type', 'application/json');
@@ -71,6 +94,8 @@ app.post('/modifieBot', function(req,res) {
 });
 
 app.post('/deleteBot', function(req,res) {
+	httpRequest = new XMLHttpRequest();
+	httpRequest.onreadystatechange = handleResponse;
 	httpRequest.open('PUT', `http://localhost:3000/bot/${bot.name}`, true);
 	httpRequest.setRequestHeader('Content-Type', 'application/json');
 	httpRequest.send(JSON.stringify(bot));
