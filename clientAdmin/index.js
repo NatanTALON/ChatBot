@@ -96,9 +96,8 @@ app.post('/modifieBot', function(req,res) {
 app.post('/deleteBot', function(req,res) {
 	httpRequest = new XMLHttpRequest();
 	httpRequest.onreadystatechange = handleResponse;
-	httpRequest.open('PUT', `http://localhost:3000/bot/${bot.name}`, true);
-	httpRequest.setRequestHeader('Content-Type', 'application/json');
-	httpRequest.send(JSON.stringify(bot));
+	httpRequest.open('DELETE', `http://localhost:3000/bot/${req.body.name}`, true);
+	httpRequest.send();
 	res.redirect('/');
 });
 
