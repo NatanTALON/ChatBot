@@ -39,7 +39,7 @@ app.post('/bot', cors(corsOptions),function(req, res) {
 
 app.get('/bot/:nomBot', cors(corsOptions), function(req,res){
 	for(i =0; i< chatbots.length; i++){
-		if(chatbot[i].name == req.params.nomBot){
+		if(chatbots[i].name == req.params.nomBot){
 			concernedChatBotDescriptor = chatbotsDescriptor[i];
 		}
 	}
@@ -50,6 +50,7 @@ app.delete('/bot/:nomBot', cors(corsOptions), function(req,res){
 	for(i = 0; i < chatbots.length; i++){
 		test = chatbots[i].name == req.params.nomBot;
 		if(chatbots[i].name == req.params.nomBot){
+			chatbots[i].stopListen();
 			chatbots.splice(i,1);
 			chatbotsDescriptor.splice(i,1);
 		}
@@ -59,12 +60,19 @@ app.delete('/bot/:nomBot', cors(corsOptions), function(req,res){
 });
 
 app.put('/bot/:nomBot', cors(corsOptions), function(req, res){
-	var bot = new Bot(req.body.nom, req.body.url, botPort, req.body.brain);
+	//var bot = new Bot(req.body.name, req.body.service, req.body.token, req.body.brain);
 	for(i = 0; i < chatbots.length; i++){
 		if(chatbots[i].name == req.params.nomBot){
-			chatbots[i].stopListen();
-			chatbots.splice(i, 1, bot);
-			chatbotsDescriptor.splice(i,1,{"name" : req.body.nom, "service" : req.body.service, "token" : req.body.token, "brain" : req.body.brain});
+			if(chatbots[i].name != req.body.name){
+				chatbots[i].name = req.body.name;
+			}
+			if(chatbots[i].service != req.body.service || chatbots[i].token != req.body.token){
+				chatbots[i].changeService(req.body.service, req.body.token);
+			}
+			if(chatbots[i].brain != req.body.brain){
+				chatbots[i].changeBrain(req.body.brain);
+			}
+			chatbotsDescriptor.splice(i,1,{"name" : req.body.name, "service" : req.body.service, "token" : req.body.token, "brain" : req.body.brain});
 		}
 	}
 	res.json(chatbotsDescriptor);
