@@ -38,6 +38,7 @@ class Bot {
 		}
 
 		this.conversations = [];
+
 		/*
 		[
 			{
@@ -145,7 +146,7 @@ class Bot {
 					break;
 				case services.ALL:
 					if(this.app[services.SMS].active) {
-						this.app[services.SMS].service.close();
+						this.app[services.SMS].server.close();
 						this.app[services.SMS].active = false;
 					}
 					if(this.app[services.DISCORD].active){
@@ -162,14 +163,15 @@ class Bot {
 			this.app[services.DISCORD].service = new Discord.Client();
 
 			this.app[services.DISCORD].service.on('ready', () => {
-				console.log(`Logged in as ${client.user.tag}!`);
+				console.log(`Logged in as ${this.app[services.DISCORD].service.user.tag}!`);
 			});
 
 			this.app[services.DISCORD].service.on('message', botResponse.bind(this));
 
 			function botResponse(msg) {
 				if(!msg.author.bot && msg.isMemberMentioned(this.app[services.DISCORD].service.user)) {
-					this.brain.reply(msg.author.discriminator, msg.content).then(sendResponse.bind(this));
+					console.log(msg.content);
+					this.brain.reply(msg.author.discriminator, msg.content.slice(22)).then(sendResponse.bind(this));
 					function sendResponse(botMsg) {
 						msg.reply(botMsg);
 					}	
@@ -213,7 +215,7 @@ class Bot {
 
 
 /* test */
-//bot = new Bot('Botounet', 0, 3001, 'standard.rive');
+//var bot = new Bot('Botounet', 0, 3001, 'standard.rive');
 //var bot = new Bot('Botounet', 1, 'NTc5Mjg4NDc0OTY0ODUyNzM3.XN__wg.5dkZA5O3uMyDbBySY0co-KljaIg', 'standard.rive');
 
 
