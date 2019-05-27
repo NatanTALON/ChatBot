@@ -26,15 +26,12 @@ function handleResponse(evtXHR){
     if (httpRequest.status == 200){
 		try{
       		response = JSON.parse(httpRequest.responseText);
-		console.log(response);
 		}catch(err){
 			console.log("invocation.responseText "+httpRequest.responseText);	
 		}
     } else {
      	console.error("Invocation Errors Occured " + httpRequest.readyState + " and the status is " + httpRequest.status);
     }
-  } else {
-    console.log("currently the application is at" + httpRequest.readyState);
   }
 }
 
@@ -58,9 +55,7 @@ app.get('/allBots', function(req,res) {
 	httpRequest = new XMLHttpRequest();
 	httpRequest.onreadystatechange = handleResponse;
 	httpRequest.open('GET', 'http://localhost:3000/allBots', false);
-console.log("request opened "+httpRequest.status);
 	httpRequest.send();
-console.log("request sent "+httpRequest.status);
 	res.render('allBots', {botList: response});
 });
 
