@@ -48,6 +48,7 @@ app.get('/newBot', function(req,res) {
 });
 
 app.get('/modifieBot', function(req,res) {
+	botToChange = response;
 	res.render('modifieBot', {bot: response});
 });
 
@@ -60,6 +61,9 @@ app.get('/allBots', function(req,res) {
 });
 
 
+/**
+ * voir les détails d'un bot
+ */
 app.post('/bot', function(req,res) {
 	httpRequest = new XMLHttpRequest();
 	httpRequest.onreadystatechange = handleResponse;
@@ -68,26 +72,78 @@ app.post('/bot', function(req,res) {
 	res.render('bot', {bot: response});
 });
 
+/**
+ * ajout d'un nouveau bot
+ */
 app.post('/newBot', function(req,res) {
 	httpRequest = new XMLHttpRequest();
 	httpRequest.onreadystatechange = handleResponse;
-	let bot = {name: req.body.name, service: parseInt(req.body.service, 10), token: req.body.token, brain: req.body.brain};
+	let bot = {name: req.body.name, service: req.body.service, token: req.body.token, brain: req.body.brain};
 	httpRequest.open('POST', 'http://localhost:3000/bot', true);
 	httpRequest.setRequestHeader('Content-Type', 'application/json');
 	httpRequest.send(JSON.stringify(bot));
 	res.redirect('/');
 });
 
+/**
+ * modification d'un bot => radical: change de nom, service, cerveau
+ */
 app.post('/modifieBot', function(req,res) {
 	httpRequest = new XMLHttpRequest();
 	httpRequest.onreadystatechange = handleResponse;
-	let bot = {name: req.body.name, service: parseInt(req.body.service, 10), token: req.body.token, brain: req.body.brain};
+	let bot = {name: req.body.name, service: req.body.service, token: req.body.token, brain: req.body.brain};
 	httpRequest.open('PUT', `http://localhost:3000/bot/${req.body.id}`, true);
 	httpRequest.setRequestHeader('Content-Type', 'application/json');
 	httpRequest.send(JSON.stringify(bot));
 	res.redirect('/');
 });
 
+/**
+ * ajoute un service au bot
+ */
+app.post('/addService', function(req,res) {
+	httpRequest = new XMLHttpRequest();
+	httpRequest.onreadystatechange = handleResponse;
+	let newService = {service: req.body.service, token: req.body.token};
+	let bot = {name: req.body.name, services: response.services.push(newService), brains: response.brains};
+	httpRequest.open('PUT', `http://localhost:3000/bot/${req.body.name}/service`, true);
+	httpRequest.setRequestHeader('Content-Type', 'application/json');
+	httpRequest.send(JSON.stringify(newService));
+	res.render('modifieBot', {bot});
+});
+
+/**
+ * supprime un service du bot
+ */
+app.post('/delService', function(req,res) {
+	httpRequest = new XMLHttpRequest();
+	httpRequest.onreadystatechange = handleResponse;
+	let delService = {service: req.body.service, token: req.body.token};
+	let i = req.body.services.findIndex((elt) => {return service.service == elt.service;});
+	let bot = {name: req.body.name, services: response.services.splice(i,1), brains: response.brains};
+	httpRequest.open('DELETE', `http://localhost:3000/bot/${req.body.name}/service`, true);
+	httpRequest.setRequestHeader('Content-Type', 'application/json');
+	httpRequest.send(JSON.stringify(delService));
+	res.render('modifieBot', {bot});
+});
+
+/**
+ * ajoute un cerveau au bot
+ */
+app.post('/addBrain', function(req,res) {
+	httpRequest = new XMLHttpRequest();
+	httpRequest.onreadystatechange = handleResponse;
+	let newBrain = {brain: req.body.newBrain};
+	let bot = {name: req.body.name, services: response.services, brains: response.brains.push(req.body.newBrain)};
+	httpRequest.open('PUT', `http://localhost:3000/bot/${req.body.name}/brain`, true);
+	httpRequest.setRequestHeader('Content-Type', 'application/json');
+	httpRequest.send(JSON.stringify(newBrain));
+	res.render('modifieBot', {bot});
+});
+
+/**
+ * détruit un bot
+ */
 app.post('/deleteBot', function(req,res) {
 	httpRequest = new XMLHttpRequest();
 	httpRequest.onreadystatechange = handleResponse;

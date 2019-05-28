@@ -200,15 +200,15 @@ class Bot {
 
 		this.changeService = function (service,token) {
 			this.stopListen(service);
+			this.app[service].active = true;
 			this.app[service].token = token;
 			this.connectToService(service);
 		}
 
-
 		if(brain) {
-			this.brain.loadFile('./cerveaux/'+brain).then(this.loading_done.bind(this)).catch(this.loading_error);
+			this.brain.loadFile(['./cerveaux/begin.rive','./cerveaux/'+brain]).then(this.loading_done.bind(this)).catch(this.loading_error);
 		} else {
-			this.brain.loadDirectory("./cerveaux").then(this.loading_done.bind(this)).catch(this.loading_error);
+			this.brain.loadDirectory(['./cerveaux/begin.rive','./cerveaux/dumbSteeve.rive']).then(this.loading_done.bind(this)).catch(this.loading_error);
 		}
 	}
 }
