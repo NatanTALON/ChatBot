@@ -36,6 +36,7 @@ Add a bot given his name, the service on which he can speaks and the associated 
 app.post('/bot', cors(corsOptions),function(req, res) {
 	var bot = new Bot(req.body.name, req.body.service, req.body.token, req.body.brain);
 	chatbots.push(bot);
+	// contains all the different services, active = true if the bot can speak on that service
 	var service = [];
 	for(i = 0; i <= numberOfServices; i++){
 		if(i == req.body.service){
@@ -65,16 +66,18 @@ app.delete('/bot/:nomBot', cors(corsOptions), function(req,res){
 			chatbots[i].stopListen(-1);
 			chatbots.splice(i,1);
 			chatbotsDescriptor.splice(i,1);
+			concernedChatBotDescriptor = chatbotsDescriptor[i];
 		}
 	}
 	console.log(chatbotsDescriptor);
-	res.json(chatbotsDescriptor);
+	res.json(concernedChatBotDescriptor);
 });
 
 app.put('/bot/:nomBot', cors(corsOptions), function(req, res){
 	//var bot = new Bot(req.body.name, req.body.service, req.body.token, req.body.brain);
 	for(i = 0; i < chatbots.length; i++){
 		if(chatbots[i].name == req.params.nomBot){
+			concernedChatBotDescriptor = chatbotsDescriptor[i];
 			if(chatbots[i].name != req.body.name){
 				chatbots[i].name = req.body.name;
 				chatbotsDescriptor[i].name = req.body.name;
@@ -89,17 +92,15 @@ app.put('/bot/:nomBot', cors(corsOptions), function(req, res){
 			}
 		}
 	}
-	res.json(chatbotsDescriptor);
+	res.json(concernedChatBotDescriptor);
 });
 
 app.put('/bot/:nomBot/service', cors(corsOptions), function(req,res){
 	for(i = 0; i < chatbots.length; i++){
 		if(chatbots[i].name == req.params.nomBot){
-			console.log((chatbotsDescriptor[i].services).hasOwnProperty(req.body.service));
-			if((chatbotsDescriptor[i].services).hasOwnProperty(req.body.service)){
-				if((chatbots[i].app[req.body.service]).token != req.body.token ){
-					chatbots[i].changeService(req.body.service, req.body.token);
-				}
+			concernedChatBotDescriptor = chatbotsDescriptor[i];
+			if((chatbots[i].app[req.body.service]).token != req.body.token ){
+				chatbots[i].changeService(req.body.service, req.body.token);
 			}
 			else{
 				chatbots[i].app[req.body.service].active = true;
@@ -107,23 +108,28 @@ app.put('/bot/:nomBot/service', cors(corsOptions), function(req,res){
 			}
 		}
 	}
+	res.json(concernedChatBotDescriptor);
 });
 
 app.delete('bot/:nomBot/service', cors(corsOptions), function(req,res){
 	for(i = 0; i < chatbots.length; i++){
 		if(chatbots[i].name == req.params.nomBot){
+			concernedChatBotDescriptor = chatbotsDescriptor[i];
 			chatbots[i].stopListen(req.body.service);
 		}
 	}
+	res.json(concernedChatBotDescriptor);
 });
 
 app.put('/bot/:nomBot/brain', cors(corsOptions), function(req, res){
 	for(i = 0; i < chatbots.length; i++){
 		if(chatbots[i].name == req.params.nomBot){
+			concernedChatBotDescriptor = chatbotsDescriptor[i];
 			chatbots[i].addBrain(req.body.brain);
 			chatbotsDescriptor[i].brain.push(req.body.brain);
 		}
 	}
+	res.json(concernedChatBotDescriptor);
 });
 
 app.listen(port, () => console.log(`listening index`));
