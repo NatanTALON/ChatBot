@@ -99,13 +99,9 @@ app.put('/bot/:nomBot/service', cors(corsOptions), function(req,res){
 	for(i = 0; i < chatbots.length; i++){
 		if(chatbots[i].name == req.params.nomBot){
 			concernedChatBotDescriptor = chatbotsDescriptor[i];
-			if((chatbots[i].app[req.body.service]).token != req.body.token ){
-				chatbots[i].changeService(req.body.service, req.body.token);
-			}
-			else{
-				chatbots[i].app[req.body.service].active = true;
-				(chatbots[i].app[req.body.service]).token = req.body.token;
-			}
+			chatbots[i].changeService(req.body.service, req.body.token);
+			(chatbotsDescriptor[i].services)[i].active = true;
+			(chatbotsDescriptor[i].services)[i].token = req.body.token;
 		}
 	}
 	res.json(concernedChatBotDescriptor);
