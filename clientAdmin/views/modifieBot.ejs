@@ -9,6 +9,7 @@
 		</form>
 	</div>
 	<div>
+		<h3>Base du bot :</h3>
 		<form action="/modifieBot" method="post">
 			<input type="hidden" name="id" value="<%= bot.name %>">
 			<div>
@@ -24,14 +25,54 @@
 			</div>
 			<div>
 				Token :
-				<input type="text" name="token" value="<%= bot.token %>">
+				<input type="text" name="token">
 			</div>
 			<div>
 				Cerveau : 
-				<input type="text" name="brain" value="<%= bot.brain %>">
+				<select name="brain">
+					<option value="standard.rive">standard</option>
+					<option value="dumbSteeve.rive">dumb Steeve</option>
+					<option value="Botounet.rive">Botounet</option>
+				</select>
 			</div>
-			<input type="submit" value="Enregistrer">
+			<input type="submit" value="Modifier la base">
 		</form>
+		<h3>Ajouter un service ou un cerveau :</h3>
+		<div>
+			Services :
+			<div>
+				<form action="<% bot.services[1].active ? /delService : /addService %>" method="post">
+					<input type="hidden" name="name" value="<%= bot.name %>">
+					<input type="hidden" name="service" value=0>
+					SMS:
+					<input type="number" name="token" value="<% bot.services[0].token %>">
+					<input type="submit" value="<% bot.services[0].active ? Supprimer : Ajouter %>">
+				</form>
+			</div>
+			<div>
+				<form action="<% bot.services[1].active ? /delService : /addService %>" method="post">
+					<input type="hidden" name="name" value="<%= bot.name %>">
+					<input type="hidden" name="service" value=1>
+					DISCORD:
+					<input type="text" name="token" value="<% bot.services[1].token %>">
+					<input type="submit" value="<% bot.services[1].active ? Supprimer : Ajouter %>">
+				</form>
+			</div>
+		</div>
+		<div>
+			Cerveaux :
+			<% bot.brains.forEach((elt) => { %>
+				<%= elt %>
+			}) %>
+			<form action="/addBrain" method="post">
+				<select name="newBrain">
+					<option value="standard.rive">standard</option>
+					<option value="dumbSteeve.rive">dumb Steeve</option>
+					<option value="Botounet.rive">Botounet</option>
+				</select>
+				<input type="submit" value="Ajouter">
+			</form>
+		</div>
 	</div>
 </body>
 </html>
