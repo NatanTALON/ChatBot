@@ -9,6 +9,8 @@ const services = {
 	DISCORD: 1		// https://discordapp.com/oauth2/authorize?client_id=Bot_Client_ID&scope=bot&permissions=2048	clientId for botounet = 579288474964852737
 }
 
+const numberOfServices = 2;
+
 class Bot {
 
 	constructor(name, service, token, brain) {
@@ -56,7 +58,7 @@ class Bot {
 		this.loading_done = function () {
 			console.log("Bot has finished loading!");
 			this.brain.sortReplies();
-			this.connectToService(services.ALL);			
+			this.connectToService(services.ALL);
 		}
 
 
@@ -127,7 +129,7 @@ class Bot {
 
 			this.app[services.SMS].server = this.app[services.SMS].service.listen(parseInt(this.app[services.SMS].token,10), () => console.log(`bot listening on ${this.app[services.SMS].token}`));
 		}
-		
+
 
 
 		this.stopListen = function(service){
@@ -174,7 +176,7 @@ class Bot {
 					this.brain.reply(msg.author.discriminator, msg.content.slice(22)).then(sendResponse.bind(this));
 					function sendResponse(botMsg) {
 						msg.reply(botMsg);
-					}	
+					}
 				}
 			}
 
