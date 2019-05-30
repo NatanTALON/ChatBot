@@ -20,6 +20,7 @@ class Bot {
 		/*
 		[
 			{
+				active: boolean
 				type: services
 				service: application
 				token: ___
@@ -32,10 +33,10 @@ class Bot {
 		 */
 		switch(service) {
 			case services.SMS:
-				this.app.push({type: services.SMS, token: token});
+				this.app.push({type: services.SMS, token: token, active: false});
 				break;
 			case services.DISCORD:
-				this.app.push({type: services.DISCORD, token: token});
+				this.app.push({type: services.DISCORD, token: token, active: false});
 				break;
 			default:
 				console.log(`Error on constructor: no such service ${service}`);
@@ -52,8 +53,14 @@ class Bot {
 		]
 		*/
 
+
+//////////////////////////////// Getters //////////////////////////////////////////////////////////////
 		this.getName = function () {
 			return this.name;
+		}
+
+		this.getServices = function () {
+			return this.app;
 		}
 
 
@@ -76,24 +83,29 @@ class Bot {
 			switch(service) {
 				case services.SMS:
 					for (var i = 0; i < this.app.length; i++) {
-						if(this.app[i].type == services.SMS && this.app[i].token == token) {
+						if(this.app[i].type == services.SMS && this.app[i].token == token && !this.app[i].active) {
 							this.connect_SMS(i);
+							this.app[i].active = true;
 						}
 					}
 					break;
 				case services.DISCORD:
 					for (var i = 0; i < this.app.length; i++) {
-						if(this.app[i].type == services.DISCORD && this.app[i].token == token) {
+						if(this.app[i].type == services.DISCORD && this.app[i].token == token && !this.app[i].active) {
 							this.connect_DISCORD(i);
+							this.app[i].active = true;
 						}
 					}
 					break;
 				case services.ALL:
 					for (var i = 0; i < this.app.length; i++) {
-						if(this.app[i].type == services.SMS) {
-							this.connect_SMS(i);
-						} else if (this.app[i].type == services.DISCORD) {
-							this.connect_DISCORD(i);
+						if (!this.app[i].active) {
+							if(this.app[i].type == services.SMS) {
+								this.connect_SMS(i);
+							} else if (this.app[i].type == services.DISCORD) {
+								this.connect_DISCORD(i);
+							}
+							this.app[i].active = true;
 						}
 					}
 					break;
@@ -172,8 +184,9 @@ class Bot {
 				case services.SMS:
 					let i = 0;
 					while (i < this.app.length) {
-						if(this.app[i].type == services.SMS && this.app[i].token == token) {
+						if(this.app[i].type == services.SMS && this.app[i].token == token && this.app[i].active) {
 							this.app[i].server.close();
+							this.app[i].active = false;
 							if (del) {
 								this.app.splice(i,1);
 							}
@@ -184,8 +197,9 @@ class Bot {
 				case services.DISCORD:
 					let i = 0;
 					while (i < this.app.length) {
-						if(this.app[i].type == services.DISCORD && this.app[i].token == token) {
+						if(this.app[i].type == services.DISCORD && this.app[i].token == token && this.app[i].active) {
 							this.app[i].service.destroy();
+							this.app[i].active = false;
 							if (del) {
 								this.app.splice(i,1);
 							}
@@ -195,15 +209,18 @@ class Bot {
 					break;
 				case services.ALL:
 					for (var i = 0; i < this.app.length; i++) {
-						if(this.app[i].type == services.SMS) {
-							this.app[i].server.close();
-						}
-						if(this.app[i].type == services.DISCORD) {
-							this.app[i].service.destroy();
-						}
-						if (del) {
-								this.app.splice(i,1);
+						if (this.app[i].active) {
+							if(this.app[i].type == services.SMS) {
+								this.app[i].server.close();
 							}
+							if(this.app[i].type == services.DISCORD) {
+								this.app[i].service.destroy();
+							}
+							this.app[i].active = false;
+						}
+					}
+					if (del) {
+						this.app = [];
 					}
 					break;
 				default:
