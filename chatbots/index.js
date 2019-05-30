@@ -8,8 +8,6 @@ const port = 3000;
 
 const app = express();
 
-const numberOfServices = 2;
-
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json());
 app.use(cors());
@@ -42,10 +40,11 @@ app.get('/allBots', cors(corsOptions), function(req, res){
 });
 
 app.get('/bot/:nomBot', cors(corsOptions), function(req,res){
-	for(i =0; i< chatbots.length; i++){
-		if(chatbots[i].name == req.params.nomBot){
-			concernedChatBotDescriptor = chatbotsDescriptor[i];
-		}
+	let i = chatbots.findIndex((elt) => {
+		return elt.name == req.params.nomBot;
+	});
+	if (i != -1) {
+		concernedChatBotDescriptor = chatbotsDescriptor[i];
 	}
 	res.json(concernedChatBotDescriptor);
 });
@@ -73,7 +72,7 @@ app.post('/bot', cors(corsOptions),function(req, res) {
 });
 
 app.post('/bot/:nomBot/service', cors(corsOptions), function(req,res) {
-	for(i = 0; i < chatbots.length; i++){
+	for(let i = 0; i < chatbots.length; i++){
 		if(chatbots[i].name == req.params.nomBot){
 			chatbots[i].addService(req.body.service, req.body.token);
 			chatbotsDescriptor[i].services.push({type: req.body.service, token: req.body.token, active: false});
@@ -88,23 +87,31 @@ app.post('/bot/:nomBot/service', cors(corsOptions), function(req,res) {
 ////////////////////////////////// DELETE requests ////////////////////////////////////////////////////////
 
 app.delete('/bot/:nomBot', cors(corsOptions), function(req,res){
-	for(i = 0; i < chatbots.length; i++){
-		if(chatbots[i].name == req.params.nomBot){
-			concernedChatBotDescriptor = chatbotsDescriptor[i];
-			chatbots[i].stopListen(-1, undefined, true);
-			chatbots.splice(i,1);
-			chatbotsDescriptor.splice(i,1);
-		}
+	let botIndex = chatbots.findIndex((elt) => {
+		return elt.name == req.params.nomBot;
+	});
+	if (botIndex != -1) {
+		concernedChatBotDescriptor = chatbotsDescriptor[botIndex];
+		chatbots[botIndex].stopListen(-1, undefined, true);
+		chatbots.splice(botIndex,1);
+		chatbotsDescriptor.splice(botIndex,1);
 	}
 	console.log(chatbotsDescriptor);
 	res.json(concernedChatBotDescriptor);
 });
 
-app.delete('/bot/:nomBot/service', cors(corsOptions), function(req,res){
-	for(i = 0; i < chatbots.length; i++){
-		if(chatbots[i].name == req.params.nomBot){
-			concernedChatBotDescriptor = chatbotsDescriptor[i];
-			chatbots[i].stopListen(req.body.service, req.body.token, true);
+app.delete('/bot/:nomBot/service/:service/:token', cors(corsOptions), function(req,res){
+	let i = chatbots.findIndex((elt) => {
+		return elt.name == req.params.nomBot;
+	});
+	if (i != -1) {
+		concernedChatBotDescriptor = chatbotsDescriptor[i];
+		chatbots[i].stopListen(parseInt(req.body.service,10), req.body.token, true);
+		let j = chatbotsDescriptor[i].findIndex((elt) => {
+			return elt.type == req.params.service && elt.token == req.params.token;
+		});
+		if (j != -1) {
+			chatbotsDescriptor[i].services.splice(j,1);
 		}
 	}
 	res.json(concernedChatBotDescriptor);
@@ -124,10 +131,10 @@ app.put('/bot/:nomBot/service/:service/:token', cors(corsOptions), function(req,
 		});
 		if (j != -1) {
 			if (req.body.activate == 'on' && !chatbotsDescriptor[i].services[j].active) {
-				chatbots[i].connectToService(req.params.service, req.params.token);
+				chatbots[i].connectToService(parseInt(req.params.service,10), req.params.token);
 				chatbotsDescriptor[i].services[j].active = true;
 			} else if (req.body.activate == 'off' && chatbotsDescriptor[i].services[j].active) {
-				chatbots[i].stopListen(req.params.service, req.params.token, false);
+				chatbots[i].stopListen(parseInt(req.params.service,10), req.params.token, false);
 				chatbotsDescriptor[i].services[j].active = false;
 			}
 			concernedChatBotDescriptor = chatbotsDescriptor[i];
