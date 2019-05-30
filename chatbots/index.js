@@ -114,35 +114,23 @@ app.delete('/bot/:nomBot/service', cors(corsOptions), function(req,res){
 
 ///////////////////////////////// PUT requests //////////////////////////////////////////////////////////
 
-app.put('/bot/:nomBot', cors(corsOptions), function(req, res){
-	//var bot = new Bot(req.body.name, req.body.service, req.body.token, req.body.brain);
-	for(i = 0; i < chatbots.length; i++){
-		if(chatbots[i].name == req.params.nomBot){
+app.put('/bot/:nomBot/service/:service/:token', cors(corsOptions), function(req,res){
+	let i = chatbots.findIndex((elt) => {
+		return elt.name == req.params.nomBot;
+	});
+	if (i != -1) {
+		let j = chatbotsDescriptor[i].services.findIndex((elt) => {
+			return elt.type == req.params.service && elt.token == req.params.token;
+		});
+		if (j != -1) {
+			if (req.body.activate == 'on' && !chatbotsDescriptor[i].services[j].active) {
+				chatbots[i].connectToService(req.params.service, req.params.token);
+				chatbotsDescriptor[i].services[j].active = true;
+			} else if (req.body.activate == 'off' && chatbotsDescriptor[i].services[j].active) {
+				chatbots[i].stopListen(req.params.service, req.params.token, false);
+				chatbotsDescriptor[i].services[j].active = false;
+			}
 			concernedChatBotDescriptor = chatbotsDescriptor[i];
-			if(chatbots[i].name != req.body.name){
-				chatbots[i].name = req.body.name;
-				chatbotsDescriptor[i].name = req.body.name;
-			}
-			if(chatbots[i].services != req.body.service || chatbots[i].token != req.body.token){
-				chatbots[i].changeService(req.body.service, req.body.token);
-				chatbotsDescriptor[i].services = [{service : req.body.service, token :req.body.token}];
-			}
-			if(!(chatbotsDescriptor[i].brains).includes(req.body.brain)){
-				chatbots[i].changeBrain(req.body.brain);
-				chatbotsDescriptor[i].brain = [req.body.brain];
-			}
-		}
-	}
-	res.json(concernedChatBotDescriptor);
-});
-
-app.put('/bot/:nomBot/service', cors(corsOptions), function(req,res){
-	for(i = 0; i < chatbots.length; i++){
-		if(chatbots[i].name == req.params.nomBot){
-			concernedChatBotDescriptor = chatbotsDescriptor[i];
-			chatbots[i].changeService(req.body.service, req.body.token);
-			(chatbotsDescriptor[i].services)[i].active = true;
-			(chatbotsDescriptor[i].services)[i].token = req.body.token;
 		}
 	}
 	res.json(concernedChatBotDescriptor);
@@ -150,11 +138,17 @@ app.put('/bot/:nomBot/service', cors(corsOptions), function(req,res){
 
 
 app.put('/bot/:nomBot/brain', cors(corsOptions), function(req, res){
-	for(i = 0; i < chatbots.length; i++){
-		if(chatbots[i].name == req.params.nomBot){
-			concernedChatBotDescriptor = chatbotsDescriptor[i];
+	let i = chatbots.findIndex((elt) => {
+		return elt.name == req.params.nomBot;
+	});
+	if (i != -1) {
+		if (req.body.action == 'add') {
 			chatbots[i].addBrain(req.body.brain);
-			chatbotsDescriptor[i].brain.push(req.body.brain);
+			chatbotsDescriptor[i].brains.push(req.body.brain);
+		} else if (req.body.action == 'change') {
+			chatbots[i].changeBrain(req.body.brain);
+			chatbotsDescriptor[i].brains = [req.body.brain];
+			concernedChatBotDescriptor = chatbotsDescriptor[i];
 		}
 	}
 	res.json(concernedChatBotDescriptor);
