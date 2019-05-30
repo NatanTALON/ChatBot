@@ -16,24 +16,26 @@ class Bot {
 	constructor(name, service, token, brain) {
 		this.name = name;
 		this.brain = new RiveScript({utf8: true});
-		this.app = [ {active: false}, {active: false} ];
+		this.app = [];
 		/*
 		[
 			{
-				active: boolean
+				type: services
 				service: application
 				token: ___
 			}
 		]
 		*/
+
+		/**
+		 *	Adding first service on creation
+		 */
 		switch(service) {
 			case services.SMS:
-				this.app[services.SMS].active = true;
-				this.app[services.SMS].token = token;
+				this.app.push({type: services.SMS, token: token});
 				break;
 			case services.DISCORD:
-				this.app[services.DISCORD].active = true;
-				this.app[services.DISCORD].token = token;
+				this.app.push({type: services.DISCORD, token: token});
 				break;
 			default:
 				console.log(`Error on constructor: no such service ${service}`);
@@ -55,31 +57,44 @@ class Bot {
 		}
 
 
+/////////////////////////////// Functions used by the brain ///////////////////////////////////////////
 		this.loading_done = function () {
 			console.log("Bot has finished loading!");
 			this.brain.sortReplies();
-			this.connectToService(services.ALL);
+			this.connectToService(services.ALL, undefined);
+		}
+
+		this.loading_error = function (error, filename, lineno) {
+			console.log("Error when loading files: " + error);
 		}
 
 
-		this.connectToService = function (service) {
+
+///////////////////////////// Connection / disconnection functions //////////////////////////////////////////////////
+
+		this.connectToService = function (service, token) {
 			switch(service) {
 				case services.SMS:
-					if(this.app[services.SMS].active) {
-						this.connect_SMS();
+					for (var i = 0; i < this.app.length; i++) {
+						if(this.app[i].type == services.SMS && this.app[i].token == token) {
+							this.connect_SMS(i);
+						}
 					}
 					break;
 				case services.DISCORD:
-					if(this.app[services.DISCORD].active){
-						this.connect_DISCORD();
+					for (var i = 0; i < this.app.length; i++) {
+						if(this.app[i].type == services.DISCORD && this.app[i].token == token) {
+							this.connect_DISCORD(i);
+						}
 					}
 					break;
 				case services.ALL:
-					if(this.app[services.SMS].active) {
-						this.connect_SMS();
-					}
-					if(this.app[services.DISCORD].active){
-						this.connect_DISCORD();
+					for (var i = 0; i < this.app.length; i++) {
+						if(this.app[i].type == services.SMS) {
+							this.connect_SMS(i);
+						} else if (this.app[i].type == services.DISCORD) {
+							this.connect_DISCORD(i);
+						}
 					}
 					break;
 				default:
@@ -88,25 +103,25 @@ class Bot {
 		}
 
 
-		this.connect_SMS = function () {
-			this.app[services.SMS].service = express();
-			this.app[services.SMS].service.set('view engine', 'ejs');
+		this.connect_SMS = function (indice) {
+			this.app[indice].service = express();
+			this.app[indice].service.set('view engine', 'ejs');
 
-			this.app[services.SMS].service.use(bodyParser.urlencoded({ extended: false }))
-			this.app[services.SMS].service.use(bodyParser.json());
+			this.app[indice].service.use(bodyParser.urlencoded({ extended: false }))
+			this.app[indice].service.use(bodyParser.json());
 
-			this.app[services.SMS].service.get('/', function(req, res) {
+			this.app[indice].service.get('/', function(req, res) {
 				res.render('login');
 			});
 
-			this.app[services.SMS].service.post('/', postOnHome.bind(this));
+			this.app[indice].service.post('/', postOnHome.bind(this));
 			function postOnHome(req,res) {
 				let newConv = {userName: req.body.userName, messageList: []};
 				this.conversations.push(newConv);
 				res.render('conversation', {conv: newConv});
 			}
 
-			this.app[services.SMS].service.post('/conv', postOnConv.bind(this));
+			this.app[indice].service.post('/conv', postOnConv.bind(this));
 			function postOnConv(req,res) {
 				let i = this.conversations.findIndex(function(elt) {
 					return elt.userName == req.body.userName;
@@ -127,51 +142,20 @@ class Bot {
 
 			}
 
-			this.app[services.SMS].server = this.app[services.SMS].service.listen(parseInt(this.app[services.SMS].token,10), () => console.log(`bot listening on ${this.app[services.SMS].token}`));
+			this.app[indice].server = this.app[indice].service.listen(parseInt(this.app[indice].token,10), () => console.log(`bot listening on ${this.app[indice].token}`));
 		}
 
+		this.connect_DISCORD = function (indice) {
+			this.app[indice].service = new Discord.Client();
 
-
-		this.stopListen = function(service){
-			switch(service) {
-				case services.SMS:
-					if(this.app[services.SMS].active) {
-						this.app[services.SMS].server.close();
-						this.app[services.SMS].active = false;
-					}
-					break;
-				case services.DISCORD:
-					if(this.app[services.DISCORD].active){
-						this.app[services.DISCORD].service.destroy();
-						this.app[services.DISCORD].active = false;
-					}
-					break;
-				case services.ALL:
-					if(this.app[services.SMS].active) {
-						this.app[services.SMS].server.close();
-						this.app[services.SMS].active = false;
-					}
-					if(this.app[services.DISCORD].active){
-						this.app[services.DISCORD].service.destroy();
-						this.app[services.DISCORD].active = false;
-					}
-					break;
-				default:
-					console.log(`Error on destructor: no such service ${service}`);
-			}
-		}
-
-		this.connect_DISCORD = function () {
-			this.app[services.DISCORD].service = new Discord.Client();
-
-			this.app[services.DISCORD].service.on('ready', () => {
-				console.log(`Logged in as ${this.app[services.DISCORD].service.user.tag}!`);
+			this.app[indice].service.on('ready', () => {
+				console.log(`Logged in as ${this.app[indice].service.user.tag}!`);
 			});
 
-			this.app[services.DISCORD].service.on('message', botResponse.bind(this));
+			this.app[indice].service.on('message', botResponse.bind(this));
 
 			function botResponse(msg) {
-				if(!msg.author.bot && msg.isMemberMentioned(this.app[services.DISCORD].service.user)) {
+				if(!msg.author.bot && msg.isMemberMentioned(this.app[indice].service.user)) {
 					console.log(msg.content);
 					this.brain.reply(msg.author.discriminator, msg.content.slice(22)).then(sendResponse.bind(this));
 					function sendResponse(botMsg) {
@@ -180,33 +164,81 @@ class Bot {
 				}
 			}
 
-			this.app[services.DISCORD].service.login(this.app[services.DISCORD].token);
+			this.app[indice].service.login(this.app[indice].token);
+		}
+
+		this.stopListen = function(service, token, del){
+			switch(service) {
+				case services.SMS:
+					let i = 0;
+					while (i < this.app.length) {
+						if(this.app[i].type == services.SMS && this.app[i].token == token) {
+							this.app[i].server.close();
+							if (del) {
+								this.app.splice(i,1);
+							}
+						}
+						i++;
+					}
+					break;
+				case services.DISCORD:
+					let i = 0;
+					while (i < this.app.length) {
+						if(this.app[i].type == services.DISCORD && this.app[i].token == token) {
+							this.app[i].service.destroy();
+							if (del) {
+								this.app.splice(i,1);
+							}
+						}
+						i++;
+					}
+					break;
+				case services.ALL:
+					for (var i = 0; i < this.app.length; i++) {
+						if(this.app[i].type == services.SMS) {
+							this.app[i].server.close();
+						}
+						if(this.app[i].type == services.DISCORD) {
+							this.app[i].service.destroy();
+						}
+						if (del) {
+								this.app.splice(i,1);
+							}
+					}
+					break;
+				default:
+					console.log(`Error on destructor: no such service ${service}`);
+			}
 		}
 
 
-		this.loading_error = function (error, filename, lineno) {
-			console.log("Error when loading files: " + error);
+////////////////////////////////// Service handler functions /////////////////////////////////////////////////
+
+		this.addService = function (service,token) {
+			this.app.push({type: service, token: token});
+		}
+
+		this.delService = function (service,token) {
+			this.stopListen(service,token,true);
 		}
 
 
+//////////////////////////////// Brain handler functions /////////////////////////////////////////////////////
 		this.changeBrain = function (brain) {
+			this.stopListen(services.ALL, undefined, false);
 			this.brain = new RiveScript();
 			this.brain.loadFile('./cerveaux/'+brain).then(this.loading_done).catch(this.loading_error);
 		}
 
 
 		this.addBrain = function (brain) {
+			this.stopListen(services.ALL, undefined, false);
 			this.brain.loadFile('./cerveaux/'+brain).then(this.loading_done).catch(this.loading_error);
 		}
 
 
-		this.changeService = function (service,token) {
-			this.stopListen(service);
-			this.app[service].active = true;
-			this.app[service].token = token;
-			this.connectToService(service);
-		}
 
+///////////////////////////////// Load brain after construction ////////////////////////////////////////////
 		if(brain) {
 			this.brain.loadFile(['./cerveaux/begin.rive','./cerveaux/'+brain]).then(this.loading_done.bind(this)).catch(this.loading_error);
 		} else {
@@ -217,7 +249,7 @@ class Bot {
 
 
 /* test */
-//var bot = new Bot('Botounet', 0, 3001, 'standard.rive');
+var bot = new Bot('Botounet', 0, 3001, 'standard.rive');
 //var bot = new Bot('Botounet', 1, 'NTc5Mjg4NDc0OTY0ODUyNzM3.XN__wg.5dkZA5O3uMyDbBySY0co-KljaIg', 'standard.rive');
 
 
