@@ -23,30 +23,20 @@ const corsOptions = {
 var chatbots = [];
 //descrition des bots avec un tableau de json
 var chatbotsDescriptor = [];
-
-
-app.get('/allBots', cors(corsOptions), function(req, res){
-	console.log(chatbotsDescriptor);
-	res.json(chatbotsDescriptor);
-});
-
 /*
-Add a bot given his name, the service on which he can speaks and the associated token, and his brain
-*/
-app.post('/bot', cors(corsOptions),function(req, res) {
-	var bot = new Bot(req.body.name, req.body.service, req.body.token, req.body.brain);
-	chatbots.push(bot);
-	// contains all the different services, active = true if the bot can speak on that service
-	var service = [];
-	for(i = 0; i <= numberOfServices; i++){
-		if(i == req.body.service){
-			service.push({service : i, token : req.body.token, active : true});
-		}
-		else{
-			service.push({service : i, token : 0, active : false});
-		}
+[
+	{
+		name: string
+		services: [ { type: service, token: string, active: boolean } ]
+		brains: [ strings ]
 	}
-	chatbotsDescriptor.push({"name" : req.body.name, "services" : service, "brains" : [req.body.brain]});
+]
+*/
+
+
+
+////////////////////////////////////// GET requests /////////////////////////////////////////////////////////
+app.get('/allBots', cors(corsOptions), function(req, res){
 	console.log(chatbotsDescriptor);
 	res.json(chatbotsDescriptor);
 });
@@ -60,18 +50,69 @@ app.get('/bot/:nomBot', cors(corsOptions), function(req,res){
 	res.json(concernedChatBotDescriptor);
 });
 
+
+
+////////////////////////////////// POST requests ///////////////////////////////////////////////////////////
+/*
+Add a bot given his name, the service on which he can speaks and the associated token, and his brain
+*/
+app.post('/bot', cors(corsOptions),function(req, res) {
+	let i = chatbotsDescriptor.findIndex((elt) => {
+		return elt.name == req.body.name;
+	});
+
+	if (i == -1) {
+		var bot = new Bot(req.body.name, req.body.service, req.body.token, req.body.brain);
+		chatbots.push(bot);
+		chatbotsDescriptor.push({name: req.body.name, services: [{type: req.body.service, token: req.body.token, active: true}], brains: [req.body.brain]});
+		console.log(chatbotsDescriptor);
+		res.json(chatbotsDescriptor);
+	} else {
+		res.json({error: true, msg: "Name already used"});
+	}
+});
+
+app.post('/bot/:nomBot/service', cors(corsOptions), function(req,res) {
+	for(i = 0; i < chatbots.length; i++){
+		if(chatbots[i].name == req.params.nomBot){
+			chatbots[i].addService(req.body.service, req.body.token);
+			chatbotsDescriptor[i].services.push({type: req.body.service, token: req.body.token, active: false});
+			concernedChatBotDescriptor = chatbotsDescriptor[i];
+		}
+	}
+	res.json(chatbotsDescriptor);
+});
+
+
+
+////////////////////////////////// DELETE requests ////////////////////////////////////////////////////////
+
 app.delete('/bot/:nomBot', cors(corsOptions), function(req,res){
 	for(i = 0; i < chatbots.length; i++){
 		if(chatbots[i].name == req.params.nomBot){
-			chatbots[i].stopListen(-1);
+			concernedChatBotDescriptor = chatbotsDescriptor[i];
+			chatbots[i].stopListen(-1, undefined, true);
 			chatbots.splice(i,1);
 			chatbotsDescriptor.splice(i,1);
-			concernedChatBotDescriptor = chatbotsDescriptor[i];
 		}
 	}
 	console.log(chatbotsDescriptor);
 	res.json(concernedChatBotDescriptor);
 });
+
+app.delete('/bot/:nomBot/service', cors(corsOptions), function(req,res){
+	for(i = 0; i < chatbots.length; i++){
+		if(chatbots[i].name == req.params.nomBot){
+			concernedChatBotDescriptor = chatbotsDescriptor[i];
+			chatbots[i].stopListen(req.body.service, req.body.token, true);
+		}
+	}
+	res.json(concernedChatBotDescriptor);
+});
+
+
+
+///////////////////////////////// PUT requests //////////////////////////////////////////////////////////
 
 app.put('/bot/:nomBot', cors(corsOptions), function(req, res){
 	//var bot = new Bot(req.body.name, req.body.service, req.body.token, req.body.brain);
@@ -107,15 +148,6 @@ app.put('/bot/:nomBot/service', cors(corsOptions), function(req,res){
 	res.json(concernedChatBotDescriptor);
 });
 
-app.delete('bot/:nomBot/service', cors(corsOptions), function(req,res){
-	for(i = 0; i < chatbots.length; i++){
-		if(chatbots[i].name == req.params.nomBot){
-			concernedChatBotDescriptor = chatbotsDescriptor[i];
-			chatbots[i].stopListen(req.body.service);
-		}
-	}
-	res.json(concernedChatBotDescriptor);
-});
 
 app.put('/bot/:nomBot/brain', cors(corsOptions), function(req, res){
 	for(i = 0; i < chatbots.length; i++){
