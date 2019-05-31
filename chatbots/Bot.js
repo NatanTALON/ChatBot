@@ -9,8 +9,6 @@ const services = {
 	DISCORD: 1		// https://discordapp.com/oauth2/authorize?client_id=Bot_Client_ID&scope=bot&permissions=2048	clientId for botounet = 579288474964852737
 }
 
-const numberOfServices = 2;
-
 class Bot {
 
 	constructor(name, service, token, brain) {
@@ -180,9 +178,10 @@ class Bot {
 		}
 
 		this.stopListen = function(service, token, del){
+			let i = 0;
 			switch(service) {
 				case services.SMS:
-					let i = 0;
+					i = 0;
 					while (i < this.app.length) {
 						if(this.app[i].type == services.SMS && this.app[i].token == token && this.app[i].active) {
 							this.app[i].server.close();
@@ -195,7 +194,7 @@ class Bot {
 					}
 					break;
 				case services.DISCORD:
-					let i = 0;
+					i = 0;
 					while (i < this.app.length) {
 						if(this.app[i].type == services.DISCORD && this.app[i].token == token && this.app[i].active) {
 							this.app[i].service.destroy();
@@ -208,7 +207,7 @@ class Bot {
 					}
 					break;
 				case services.ALL:
-					for (var i = 0; i < this.app.length; i++) {
+					for (i = 0; i < this.app.length; i++) {
 						if (this.app[i].active) {
 							if(this.app[i].type == services.SMS) {
 								this.app[i].server.close();
