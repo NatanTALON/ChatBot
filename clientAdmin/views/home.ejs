@@ -7,9 +7,34 @@
 			<form action="/newBot" method="get">
 				<input type="submit" value="Créer un bot">
 			</form>
-			<form action="/allBots" method="get">
-				<input type="submit" value="Voir tous les bots">
-			</form>
+		</div>
+		<div>
+			<table>
+				<thead>
+					<tr>
+						<th>Nom</th>
+					</tr>
+				</thead>
+				<tbody>
+					<% botList.forEach( function(item, index, array) { %>
+					<tr>
+						<td><%= item.name %></td>
+						<td>
+							<form action="/bot" method="post">
+								<input type="hidden" name="name" value="<%= item.name %>">
+								<input type="submit" value="Détails">
+							</form>
+						</td>
+						<td>
+							<form action="/deleteBot" method="post">
+								<input type="hidden" name="name" value="<%= item.name %>">
+								<input type="submit" value="Supprimer">
+							</form>
+						</td>
+					</tr>
+					<% }) %>
+				</tbody>
+			</table>
 		</div>
 	</body>
 </html>

@@ -40,7 +40,11 @@ function handleResponse(evtXHR){
 /////////////////////////////////////////////////////////
 
 app.get('/', function(req,res) {
-	res.render('home');
+	httpRequest = new XMLHttpRequest();
+	httpRequest.onreadystatechange = handleResponse;
+	httpRequest.open('GET', 'http://localhost:3000/allBots', false);
+	httpRequest.send();
+	res.render('home', {botList: response});
 });
 
 app.get('/newBot', function(req,res) {
@@ -48,16 +52,7 @@ app.get('/newBot', function(req,res) {
 });
 
 app.get('/modifieBot', function(req,res) {
-	botToChange = response;
 	res.render('modifieBot', {bot: response});
-});
-
-app.get('/allBots', function(req,res) {
-	httpRequest = new XMLHttpRequest();
-	httpRequest.onreadystatechange = handleResponse;
-	httpRequest.open('GET', 'http://localhost:3000/allBots', false);
-	httpRequest.send();
-	res.render('allBots', {botList: response});
 });
 
 
@@ -86,17 +81,17 @@ app.post('/newBot', function(req,res) {
 });
 
 /**
- * modification d'un bot => radical: change de nom, service, cerveau
+ * active un service pour un bot
  */
-app.post('/modifieBot', function(req,res) {
+app.post('/activateService', function(req,res) {
 	httpRequest = new XMLHttpRequest();
 	httpRequest.onreadystatechange = handleResponse;
-	let bot = {name: req.body.name, service: req.body.service, token: req.body.token, brain: req.body.brain};
-	httpRequest.open('PUT', `http://localhost:3000/bot/${req.body.id}`, true);
+	httpRequest.open('PUT', `http://localhost:3000/bot/${req.body.botName}/service/${req.body.service}/${req.body.token}`, false);
 	httpRequest.setRequestHeader('Content-Type', 'application/json');
-	httpRequest.send(JSON.stringify(bot));
-	res.redirect('/');
+	httpRequest.send({activate: req.body.activate});
+	res.redirect('/modifieBot');
 });
+
 
 /**
  * ajoute un service au bot

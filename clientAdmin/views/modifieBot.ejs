@@ -9,56 +9,38 @@
 		</form>
 	</div>
 	<div>
-		<h3>Base du bot :</h3>
-		<form action="/modifieBot" method="post">
-			<input type="hidden" name="id" value="<%= bot.name %>">
-			<div>
-				Nom : 
-				<input type="text" name="name" value="<%= bot.name %>">
-			</div>
-			<div>
-				Service :
-				<select name="service">
-					<option value=0>SMS</option>
-					<option value=1>Discord</option>
-				</select>
-			</div>
-			<div>
-				Token :
-				<input type="text" name="token">
-			</div>
-			<div>
-				Cerveau : 
-				<select name="brain">
-					<option value="standard.rive">standard</option>
-					<option value="dumbSteeve.rive">dumb Steeve</option>
-					<option value="Botounet.rive">Botounet</option>
-				</select>
-			</div>
-			<input type="submit" value="Modifier la base">
-		</form>
-		<h3>Ajouter un service ou un cerveau :</h3>
+		<h3><%= bot.name %></h3>
+		<h3>Ajouter un service</h3>
 		<div>
 			Services :
-			<div>
-				<form action="<% bot.services[1].active ? /delService : /addService %>" method="post">
-					<input type="hidden" name="name" value="<%= bot.name %>">
-					<input type="hidden" name="service" value=0>
-					SMS:
-					<input type="number" name="token" value="<% bot.services[0].token %>">
-					<input type="submit" value="<% bot.services[0].active ? Supprimer : Ajouter %>">
-				</form>
-			</div>
-			<div>
-				<form action="<% bot.services[1].active ? /delService : /addService %>" method="post">
-					<input type="hidden" name="name" value="<%= bot.name %>">
-					<input type="hidden" name="service" value=1>
-					DISCORD:
-					<input type="text" name="token" value="<% bot.services[1].token %>">
-					<input type="submit" value="<% bot.services[1].active ? Supprimer : Ajouter %>">
-				</form>
-			</div>
+			<table>
+				<thead>
+					<tr>
+						<th>Service</th>
+						<th>token</th>
+					</tr>
+				</thead>
+				<tbody>
+					<% bot.services.forEach( function(item, index, array) { %>
+					<tr>
+						<td><% switch(item.type) { case 0: %> SMS <% break; case 1: %> DISCORD <% break; } %></td>
+						<td>
+							<%= item.token %>
+						</td>
+						<td>
+							<form action="/deleteBot" method="post">
+								<input type="hidden" name="botName" value="<%= bot.name %>">
+								<input type="hidden" name="service" value="<%= item.type %>">
+								<input type="hidden" name="token" value="<%= item.token %>">
+								<input type="submit" value="<% item.active ? éteindre : allumer %>">
+							</form>
+						</td>
+					</tr>
+					<% }) %>
+				</tbody>
+			</table>
 		</div>
+		
 		<div>
 			Cerveaux :
 			<% bot.brains.forEach((elt) => { %>
