@@ -243,13 +243,13 @@ class Bot {
 		this.changeBrain = function (brain) {
 			this.stopListen(services.ALL, undefined, false);
 			this.brain = new RiveScript();
-			this.brain.loadFile('./cerveaux/'+brain).then(this.loading_done).catch(this.loading_error);
+			this.brain.loadFile('./cerveaux/'+brain).then(this.loading_done.bind(this)).catch(this.loading_error);
 		}
 
 
 		this.addBrain = function (brain) {
 			this.stopListen(services.ALL, undefined, false);
-			this.brain.loadFile('./cerveaux/'+brain).then(this.loading_done).catch(this.loading_error);
+			this.brain.loadFile('./cerveaux/'+brain).then(this.loading_done.bind(this)).catch(this.loading_error);
 		}
 
 
