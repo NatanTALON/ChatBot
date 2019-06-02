@@ -69,12 +69,27 @@
 				<%= elt %>
 			<% }) %>
 			<form action="/addBrain" method="post">
+				<input type="hidden" name="botName" value="<%= bot.name %>">
+				<input type="hidden" name="action" value="add">
 				<select name="newBrain">
 					<option value="standard.rive">standard</option>
 					<option value="dumbSteeve.rive">dumb Steeve</option>
 					<option value="Botounet.rive">Botounet</option>
 				</select>
 				<input type="submit" value="Ajouter">
+			</form>
+		</div>
+		<h4>Changer de cerveau</h4>
+		<div>
+			<form action="/addBrain" method="post">
+				<input type="hidden" name="botName" value="<%= bot.name %>">
+				<input type="hidden" name="action" value="change">
+				<select name="newBrain">
+					<option value="standard.rive">standard</option>
+					<option value="dumbSteeve.rive">dumb Steeve</option>
+					<option value="Botounet.rive">Botounet</option>
+				</select>
+				<input type="submit" value="Changer">
 			</form>
 		</div>
 	</div>

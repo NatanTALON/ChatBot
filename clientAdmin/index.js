@@ -129,13 +129,12 @@ app.post('/delService', function(req,res) {
 app.post('/addBrain', function(req,res) {
 	httpRequest = new XMLHttpRequest();
 	httpRequest.onreadystatechange = handleResponse;
-	let newBrain = {brain: req.body.newBrain};
-	let bot = {name: req.body.name, services: response.services, brains: response.brains.push(req.body.newBrain)};
-	httpRequest.open('PUT', `http://localhost:3000/bot/${req.body.name}/brain`, true);
+	let newBrain = {brain: req.body.newBrain, action: req.body.action};
+	httpRequest.open('PUT', `http://localhost:3000/bot/${req.body.botName}/brain`, true);
 	httpRequest.setRequestHeader('Content-Type', 'application/json');
 	httpRequest.send(JSON.stringify(newBrain));
-	console.log(`sending PUT on ${req.body.name}/brain`);
-	res.render('modifieBot', {bot});
+	console.log(`sending PUT on ${req.body.botName}/brain`);
+	res.redirect('/modifieBot');
 });
 
 /**
