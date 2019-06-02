@@ -266,7 +266,7 @@ class Bot {
 
 /* test */
 //var bot = new Bot('Botounet', 0, 3001, 'standard.rive');
-//var bot = new Bot('Botounet', 1, 'NTc5Mjg4NDc0OTY0ODUyNzM3.XN__wg.5dkZA5O3uMyDbBySY0co-KljaIg', 'standard.rive');
+//var bot = new Bot('Botounet', 1, 'NTc5Mjg4NDc0OTY0ODUyNzM3.XPO7Jw.lCO3Vlef3ciYNMYiMhTGsC-_SlA', 'standard.rive');
 
 
 module.exports = Bot;

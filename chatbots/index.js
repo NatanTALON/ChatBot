@@ -76,9 +76,10 @@ app.post('/bot', cors(corsOptions),function(req, res) {
 app.post('/bot/:nomBot/service', cors(corsOptions), function(req,res) {
 	console.log(`received POST on bot/${req.params.nomBot}/service`);
 	let botIndex = chatbotsDescriptor.findIndex((elt) => {
-		return elt.name == req.body.name;
+		return elt.name == req.params.nomBot;
 	});
 	if(botIndex != -1) {
+		console.log("je passe par la");
 		chatbots[botIndex].addService(parseInt(req.body.service,10), req.body.token);
 		chatbotsDescriptor[botIndex].services.push({type: req.body.service, token: req.body.token, active: false});
 		concernedChatBotDescriptor = chatbotsDescriptor[botIndex];
