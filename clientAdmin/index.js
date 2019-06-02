@@ -27,7 +27,7 @@ function handleResponse(evtXHR){
 		try{
       		response = JSON.parse(httpRequest.responseText);
 		}catch(err){
-			console.log("invocation.responseText "+httpRequest.responseText);	
+			console.log("Error : invocation.responseText "+httpRequest.responseText);	
 		}
     } else {
      	console.error("Invocation Errors Occured " + httpRequest.readyState + " and the status is " + httpRequest.status);
@@ -44,6 +44,7 @@ app.get('/', function(req,res) {
 	httpRequest.onreadystatechange = handleResponse;
 	httpRequest.open('GET', 'http://localhost:3000/allBots', false);
 	httpRequest.send();
+	console.log("sending GET on allBots");
 	res.render('home', {botList: response});
 });
 
@@ -64,6 +65,7 @@ app.post('/bot', function(req,res) {
 	httpRequest.onreadystatechange = handleResponse;
 	httpRequest.open('GET', `http://localhost:3000/bot/${req.body.name}`, false);
 	httpRequest.send();
+	console.log(`sending GET on bot/${req.body.name}`)
 	res.render('bot', {bot: response});
 });
 
@@ -77,7 +79,21 @@ app.post('/newBot', function(req,res) {
 	httpRequest.open('POST', 'http://localhost:3000/bot', true);
 	httpRequest.setRequestHeader('Content-Type', 'application/json');
 	httpRequest.send(JSON.stringify(bot));
+	console.log("sending POST on bot");
 	res.redirect('/');
+});
+
+/**
+ * ajoute un service à un bot
+ */
+app.post('/addService', function(req,res) {
+	httpRequest = new XMLHttpRequest();
+	httpRequest.onreadystatechange = handleResponse;
+	httpRequest.open('POST', `http://localhost:3000/bot/${req.body.botName}/service`, false);
+	httpRequest.setRequestHeader('Content-Type', 'application/json');
+	httpRequest.send(JSON.stringify({service: req.body.service, token: req.body.token}));
+	console.log(`sending POST on ${req.body.botName}/service`);
+	res.render('modifieBot', {bot: response});
 });
 
 /**
@@ -88,24 +104,11 @@ app.post('/activateService', function(req,res) {
 	httpRequest.onreadystatechange = handleResponse;
 	httpRequest.open('PUT', `http://localhost:3000/bot/${req.body.botName}/service/${req.body.service}/${req.body.token}`, false);
 	httpRequest.setRequestHeader('Content-Type', 'application/json');
-	httpRequest.send({activate: req.body.activate});
+	httpRequest.send(JSON.stringify({activate: req.body.activate}));
+	console.log(`sending PUT on ${req.body.botName}/service/${req.body.service}/${req.body.token}`);
 	res.redirect('/modifieBot');
 });
 
-
-/**
- * ajoute un service au bot
- */
-app.post('/addService', function(req,res) {
-	httpRequest = new XMLHttpRequest();
-	httpRequest.onreadystatechange = handleResponse;
-	let newService = {service: req.body.service, token: req.body.token};
-	let bot = {name: req.body.name, services: response.services.push(newService), brains: response.brains};
-	httpRequest.open('PUT', `http://localhost:3000/bot/${req.body.name}/service`, true);
-	httpRequest.setRequestHeader('Content-Type', 'application/json');
-	httpRequest.send(JSON.stringify(newService));
-	res.render('modifieBot', {bot});
-});
 
 /**
  * supprime un service du bot
@@ -113,13 +116,11 @@ app.post('/addService', function(req,res) {
 app.post('/delService', function(req,res) {
 	httpRequest = new XMLHttpRequest();
 	httpRequest.onreadystatechange = handleResponse;
-	let delService = {service: req.body.service, token: req.body.token};
-	let i = req.body.services.findIndex((elt) => {return service.service == elt.service;});
-	let bot = {name: req.body.name, services: response.services.splice(i,1), brains: response.brains};
-	httpRequest.open('DELETE', `http://localhost:3000/bot/${req.body.name}/service`, true);
+	httpRequest.open('DELETE', `http://localhost:3000/bot/${req.body.botName}/service/${req.body.service}/${req.body.token}`, false);
 	httpRequest.setRequestHeader('Content-Type', 'application/json');
-	httpRequest.send(JSON.stringify(delService));
-	res.render('modifieBot', {bot});
+	httpRequest.send();
+	console.log(`sending DELETE on ${req.body.botName}/service/${req.body.service}/${req.body.token}`);
+	res.redirect('modifieBot');
 });
 
 /**
@@ -133,6 +134,7 @@ app.post('/addBrain', function(req,res) {
 	httpRequest.open('PUT', `http://localhost:3000/bot/${req.body.name}/brain`, true);
 	httpRequest.setRequestHeader('Content-Type', 'application/json');
 	httpRequest.send(JSON.stringify(newBrain));
+	console.log(`sending PUT on ${req.body.name}/brain`);
 	res.render('modifieBot', {bot});
 });
 
@@ -144,6 +146,7 @@ app.post('/deleteBot', function(req,res) {
 	httpRequest.onreadystatechange = handleResponse;
 	httpRequest.open('DELETE', `http://localhost:3000/bot/${req.body.name}`, true);
 	httpRequest.send();
+	console.log(`sending DELETE on bot/${req.body.name}`);
 	res.redirect('/');
 });
 

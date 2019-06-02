@@ -9,8 +9,8 @@
 		</form>
 	</div>
 	<div>
-		<h3><%= bot.name %></h3>
-		<h3>Ajouter un service</h3>
+		<h2><%= bot.name %></h3>
+		<h3>Allumer/éteindre un service</h3>
 		<div>
 			Services :
 			<table>
@@ -21,18 +21,27 @@
 					</tr>
 				</thead>
 				<tbody>
-					<% bot.services.forEach( function(item, index, array) { %>
+					<% bot.services.forEach( function(item) { %>
 					<tr>
-						<td><% switch(item.type) { case 0: %> SMS <% break; case 1: %> DISCORD <% break; } %></td>
+						<td><% if(item.type == 0) { %> SMS <% } else if(item.type == 1) { %> DISCORD <% } %></td>
 						<td>
 							<%= item.token %>
 						</td>
 						<td>
-							<form action="/deleteBot" method="post">
+							<form action="/activateService" method="post">
 								<input type="hidden" name="botName" value="<%= bot.name %>">
 								<input type="hidden" name="service" value="<%= item.type %>">
 								<input type="hidden" name="token" value="<%= item.token %>">
-								<input type="submit" value="<% item.active ? éteindre : allumer %>">
+								<input type="hidden" name="activate" value="<% if(item.active) { %>off<% } else { %>on<% } %>">
+								<input type="submit" value="<% if(item.active) { %> éteindre <% } else { %> allumer <%}%>">
+							</form>
+						</td>
+						<td>
+							<form action="/delService" method="post">
+								<input type="hidden" name="botName" value="<%= bot.name %>">
+								<input type="hidden" name="service" value="<%= item.type %>">
+								<input type="hidden" name="token" value="<%= item.token %>">
+								<input type="submit" value="supprimer">
 							</form>
 						</td>
 					</tr>
@@ -40,12 +49,25 @@
 				</tbody>
 			</table>
 		</div>
-		
+		<h3>Ajouter un service</h3>
 		<div>
-			Cerveaux :
-			<% bot.brains.forEach((elt) => { %>
+			<form action="/addService" method="post">
+				<input type="hidden" name="botName" value="<%= bot.name %>">
+				Service :
+				<select name="service">
+					<option value=0>SMS</option>
+					<option value=1>Discord</option>
+				</select>
+				Token :
+				<input type="text" name="token">
+				<input type="submit" value="ajouter">
+			</form>
+		</div>
+		<h3>Cerveaux</h3>
+		<div>
+			<% bot.brains.forEach(function(elt) { %>
 				<%= elt %>
-			}) %>
+			<% }) %>
 			<form action="/addBrain" method="post">
 				<select name="newBrain">
 					<option value="standard.rive">standard</option>

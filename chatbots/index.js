@@ -35,11 +35,12 @@ var chatbotsDescriptor = [];
 
 ////////////////////////////////////// GET requests /////////////////////////////////////////////////////////
 app.get('/allBots', cors(corsOptions), function(req, res){
-	console.log(chatbotsDescriptor);
+	console.log("received GET on allBots");
 	res.json(chatbotsDescriptor);
 });
 
 app.get('/bot/:nomBot', cors(corsOptions), function(req,res){
+	console.log(`received GET on bot/${req.params.nomBot}`);
 	let botIndex = chatbots.findIndex((elt) => {
 		return elt.name == req.params.nomBot;
 	});
@@ -56,12 +57,13 @@ app.get('/bot/:nomBot', cors(corsOptions), function(req,res){
 Add a bot given his name, the service on which he can speaks and the associated token, and his brain
 */
 app.post('/bot', cors(corsOptions),function(req, res) {
+	console.log(`received POST on bot`);
 	let botIndex = chatbotsDescriptor.findIndex((elt) => {
 		return elt.name == req.body.name;
 	});
 
 	if (botIndex == -1) {
-		var bot = new Bot(req.body.name, req.body.service, req.body.token, req.body.brain);
+		var bot = new Bot(req.body.name, parseInt(req.body.service,10), req.body.token, req.body.brain);
 		chatbots.push(bot);
 		chatbotsDescriptor.push({name: req.body.name, services: [{type: req.body.service, token: req.body.token, active: true}], brains: [req.body.brain]});
 		console.log(chatbotsDescriptor);
@@ -72,15 +74,16 @@ app.post('/bot', cors(corsOptions),function(req, res) {
 });
 
 app.post('/bot/:nomBot/service', cors(corsOptions), function(req,res) {
+	console.log(`received POST on bot/${req.params.nomBot}/service`);
 	let botIndex = chatbotsDescriptor.findIndex((elt) => {
 		return elt.name == req.body.name;
 	});
 	if(botIndex != -1) {
-		chatbots[botIndex].addService(req.body.service, req.body.token);
+		chatbots[botIndex].addService(parseInt(req.body.service,10), req.body.token);
 		chatbotsDescriptor[botIndex].services.push({type: req.body.service, token: req.body.token, active: false});
 		concernedChatBotDescriptor = chatbotsDescriptor[botIndex];
 	}
-	res.json(chatbotsDescriptor);
+	res.json(concernedChatBotDescriptor);
 });
 
 
@@ -88,27 +91,29 @@ app.post('/bot/:nomBot/service', cors(corsOptions), function(req,res) {
 ////////////////////////////////// DELETE requests ////////////////////////////////////////////////////////
 
 app.delete('/bot/:nomBot', cors(corsOptions), function(req,res){
+	console.log(`received DELETE on bot/${req.params.nomBot}`);
 	let botIndex = chatbots.findIndex((elt) => {
 		return elt.name == req.params.nomBot;
 	});
 	if (botIndex != -1) {
-		concernedChatBotDescriptor = chatbotsDescriptor[botIndex];
 		chatbots[botIndex].stopListen(-1, undefined, true);
 		chatbots.splice(botIndex,1);
 		chatbotsDescriptor.splice(botIndex,1);
+		concernedChatBotDescriptor = chatbotsDescriptor[botIndex];
 	}
 	console.log(chatbotsDescriptor);
 	res.json(concernedChatBotDescriptor);
 });
 
 app.delete('/bot/:nomBot/service/:service/:token', cors(corsOptions), function(req,res){
+	console.log(`received DELETE on bot/${req.params.nomBot}/service/${req.params.service}/${req.params.token}`);
 	let botIndex = chatbots.findIndex((elt) => {
 		return elt.name == req.params.nomBot;
 	});
 	if (botIndex != -1) {
 		concernedChatBotDescriptor = chatbotsDescriptor[botIndex];
-		chatbots[botIndex].stopListen(parseInt(req.body.service,10), req.body.token, true);
-		let serviceIndex = chatbotsDescriptor[botIndex].findIndex((elt) => {
+		chatbots[botIndex].stopListen(parseInt(req.params.service,10), req.params.token, true);
+		let serviceIndex = chatbotsDescriptor[botIndex].services.findIndex((elt) => {
 			return elt.type == req.params.service && elt.token == req.params.token;
 		});
 		if (serviceIndex != -1) {
@@ -123,6 +128,7 @@ app.delete('/bot/:nomBot/service/:service/:token', cors(corsOptions), function(r
 ///////////////////////////////// PUT requests //////////////////////////////////////////////////////////
 
 app.put('/bot/:nomBot/service/:service/:token', cors(corsOptions), function(req,res){
+	console.log(`received PUT on bot/${req.params.nomBot}/service/${req.params.service}/${req.params.token}`);
 	let botIndex = chatbots.findIndex((elt) => {
 		return elt.name == req.params.nomBot;
 	});
@@ -146,6 +152,7 @@ app.put('/bot/:nomBot/service/:service/:token', cors(corsOptions), function(req,
 
 
 app.put('/bot/:nomBot/brain', cors(corsOptions), function(req, res){
+	console.log(`received PUT on bot/${req.params.nomBot}/brain`);
 	let botIndex = chatbots.findIndex((elt) => {
 		return elt.name == req.params.nomBot;
 	});

@@ -13,13 +13,35 @@
 				Nom : <%= bot.name %>
 			</div>
 			<div>
-				Service : <% switch(bot.service) {case 0:%> SMS <% break; case 1:%> Discord <% defaut: break; } %>
+				Services :
+				<table>
+					<thead>
+						<tr>
+							<th>service</th>
+							<th>token</th>
+						</tr>
+					</thead>
+					<tbody>
+					<% bot.services.forEach(function(elt) { %>
+						<tr>
+							<td>
+								<% if(elt.type == 0) { %> SMS <% } else if(elt.type == 1) { %> DISCORD <% }%>
+							</td>
+							<td>
+								<%= elt.token %>
+							</td>
+						</tr>
+					<% }) %>
+					</tbody>
+				</table>
 			</div>
 			<div>
-				Token : <%= bot.token %>
-			</div>
-			<div>
-				Cerveau : <%= bot.brain %>
+				Cerveaux :
+				<% bot.brains.forEach((elt) => { %>
+				<div>
+					<%= elt %>
+				</div>
+				<% }) %>
 			</div>
 		</div>
 		<div>
